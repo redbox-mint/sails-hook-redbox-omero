@@ -1,10 +1,10 @@
 const _ = require('lodash');
 
-const TemplateController = require('./api/controllers/TemplateController');
-const TemplateService = require('./api/services/TemplateService');
-const recordTypeConfig = require('./config/recordtype.js');
-const workflowConfig = require('./config/workflow.js');
-const recordFormConfig = require('./form-config/template-1.0-draft.js');
+const GithubService = require('./api/services/GithubService');
+const GithubController = require('./api/controllers/GithubController');
+const recordTypeConfig = require('./config/recordtype');
+const workflowConfig = require('./config/workflow');
+const recordFormConfig = require('./form-config/github-1.0-draft');
 
 module.exports = function (sails) {
   return {
@@ -17,14 +17,14 @@ module.exports = function (sails) {
     routes: {
       before: {},
       after: {
-        'get /:branding/:portal/ws/template/hello': TemplateController.helloWorld
+        'get /:branding/:portal/ws/github/projects': GithubController.projects
       }
     },
     configure: function () {
-      sails.services['TemplateService'] = TemplateService;
+      sails.services['GithubService'] = GithubService;
       sails.config = _.merge(sails.config, recordTypeConfig);
       sails.config = _.merge(sails.config, workflowConfig);
-      sails.config['form']['forms'] = _.merge(sails.config['form']['forms'], {'template-1.0-draft': recordFormConfig});
+      sails.config['form']['forms'] = _.merge(sails.config['form']['forms'], {'github-1.0-draft': recordFormConfig});
     }
   }
 };

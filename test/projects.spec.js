@@ -4,7 +4,10 @@ var supertest = require('supertest');
 
 const GithubService = require('../api/services/GithubService');
 
-describe('Basic tests ::', function () {
+const username = process.env.username;
+const password = process.env.password;
+
+describe('Projects tests ::', function () {
 
   // Var to hold a running sails app instance
   var sails;
@@ -31,22 +34,22 @@ describe('Basic tests ::', function () {
     });
   });
 
-  it('should have a form', function (done) {
-    const type = sails.config['form']['forms']['github-1.0-draft']['type'];
-    assert.equal(type, 'github');
-    done();
+  it('should have a service', function (done) {
+    sails.services['GithubService'].projects(username, password).subscribe(function (response) {
+      assert.equal(response.status, 200);
+      done();
+    });
   });
 
-  it('should have a recordtype', function (done) {
-    const github = sails.config['recordtype']['github'];
-    assert.equal(github['packageType'], 'workspace');
-    done();
-  });
-
-  it('should have a workflow form', function (done) {
-    const github = sails.config['workflow']['github'];
-    assert.equal(github['draft']['config']['form'], 'github-1.0-draft');
-    done();
+  it('should have a route', function (done) {
+    supertest(sails.hooks.http.app)
+      .get('/:branding/:portal/ws/github/projects')
+      .send({username: username, password: password})
+      .expect(200)
+      .end(function (err, res) {
+        assert.equal(res.data, isArray());
+        done();
+      });
   });
 
   // After tests are complete, lower Sails

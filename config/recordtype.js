@@ -1,5 +1,5 @@
 module.exports.recordtype = {
-  "template": {
+  "github": {
     "packageType": "workspace",
     searchFilters: [
       {

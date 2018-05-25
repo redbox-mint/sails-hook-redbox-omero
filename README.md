@@ -1,4 +1,4 @@
-## A Sails Hook Redbox Template
+## A Sails Hook Redbox Github
 
 In this example template you will find the barebones requirements for a Hook
 

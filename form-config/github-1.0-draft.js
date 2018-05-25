@@ -1,9 +1,9 @@
 /**
- * Template form
+ * github form
  */
 module.exports = {
-  name: 'template-1.0-draft',
-  type: 'template',
+  name: 'github-1.0-draft',
+  type: 'github',
   skipValidationOnSave: true,
   editCssClasses: 'row col-md-12',
   viewCssClasses: 'row col-md-offset-1 col-md-10',
@@ -20,7 +20,7 @@ module.exports = {
       viewOnly: false,
       definition: {
         name: 'title',
-        value: 'Template',
+        value: 'GitHub',
         type: 'h2'
       }
     }
