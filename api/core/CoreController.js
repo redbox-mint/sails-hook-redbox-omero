@@ -1,6 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var _ = require('lodash');
 var pathExists = require("path-exists");
 var Controllers;
 (function (Controllers) {
