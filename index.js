@@ -12,13 +12,43 @@ module.exports = function (sails) {
     initialize: function (cb) {
       // Do Some initialisation tasks
       // This can be for example: copy files or images to the redbox-portal front end
-      return cb();
+      // To test run with: NODE_ENV=test mocha
+      // The Hook is environment specific, that is, the environments are also available whenever the sails app is hooked
+      let angularDest;
+      let angularOrigin;
+      ncp.limit = 16;
+      let angularTmpDest = '.tmp/public/angular/omero';
+
+      if (sails.config.environment === 'test') {
+        angularOrigin = './app/omero/src';
+        angularDest = 'test/angular/omero';
+      }
+      else {
+        angularOrigin = './node_modules/sails-hook-redbox-omero/app/omero/dist';
+        angularDest = './assets/angular/omero';
+      }
+
+      ncp(angularOrigin, angularDest, function (err) {
+        if (err) {
+          return console.error(err);
+        }
+        ncp(angularOrigin, angularTmpDest, function (err) {
+          if (err) {
+            return console.error(err);
+          }
+          return cb();
+        });
+      });
+      // }
     },
     //If each route middleware do not exist sails.lift will fail during hook.load()
     routes: {
       before: {},
       after: {
-        'get /:branding/:portal/ws/omero/projects': function(){return 'hello'}
+        'get /:branding/:portal/ws/omero/projects': OMEROController.projects,
+        'post /:branding/:portal/ws/omero/login': OMEROController.login,
+        'post /:branding/:portal/ws/omero/create': OMEROController.create,
+        'post /:branding/:portal/ws/omero/link': OMEROController.link
       }
     },
     configure: function () {
