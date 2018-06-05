@@ -1,3 +1,5 @@
+require('ts-node/register');
+
 const Sails = require('sails').Sails;
 const assert = require('assert');
 var supertest = require('supertest');
@@ -35,8 +37,8 @@ describe('Projects tests ::', function () {
   });
 
   it('should have a service', function (done) {
-    sails.services['GithubService'].projects(username, password).subscribe(function (response) {
-      assert.equal(response.status, 200);
+    sails.services.GithubService.projects(username, password).subscribe(function (response) {
+      assert(response.status === 200);
       done();
     });
   });
@@ -44,10 +46,10 @@ describe('Projects tests ::', function () {
   it('should have a route', function (done) {
     supertest(sails.hooks.http.app)
       .get('/:branding/:portal/ws/github/projects')
-      .send({username: username, password: password})
+      .query({username: username, password: password})
       .expect(200)
       .end(function (err, res) {
-        assert.equal(res.data, isArray());
+        assert(res.response.length > 0);
         done();
       });
   });

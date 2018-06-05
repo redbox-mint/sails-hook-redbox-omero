@@ -29,7 +29,7 @@ var Services;
                 username: username,
                 password: password
             });
-            var user = gh.getUser(username);
+            var user = gh.getUser();
             var filterOpts = {
                 type: 'owner',
                 sort: 'updated',

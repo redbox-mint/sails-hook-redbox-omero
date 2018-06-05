@@ -28,9 +28,9 @@ var Controllers;
             var _this = this;
             var username = req.param('username');
             var password = req.param('password');
-            sails.services.GithubService.projects(username, password)
+            sails.services['GithubService'].projects(username, password)
                 .subscribe(function (response) {
-                _this.ajaxOk(req, res, null, { status: true });
+                _this.ajaxOk(req, res, null, { response: response, status: true });
             }, function (error) {
                 sails.log.error(error);
                 var errorMessage = "Failed to get projects for user: " + username;

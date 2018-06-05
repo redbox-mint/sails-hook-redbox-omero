@@ -1,10 +1,11 @@
 declare var module;
-declare var sails;
+declare var sails: Sails;
 
 const url = require('url');
 const local = require('../../config/local');
 
 declare var GithubService;
+
 /**
  * Package that contains all Controllers.
  */
@@ -28,9 +29,9 @@ export module Controllers {
     public projects(req, res) {
       const username = req.param('username');
       const password = req.param('password');
-      sails.services.GithubService.projects(username, password)
+      sails.services['GithubService'].projects(username, password)
         .subscribe(response => {
-          this.ajaxOk(req, res, null, {status: true});
+          this.ajaxOk(req, res, null, {response: response, status: true});
         }, error => {
           sails.log.error(error);
           const errorMessage = `Failed to get projects for user: ${username}`;

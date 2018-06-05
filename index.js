@@ -2,6 +2,7 @@ const _ = require('lodash');
 
 const GithubService = require('./api/services/GithubService');
 const GithubController = require('./api/controllers/GithubController');
+
 const recordTypeConfig = require('./config/recordtype');
 const workflowConfig = require('./config/workflow');
 const recordFormConfig = require('./form-config/github-1.0-draft');

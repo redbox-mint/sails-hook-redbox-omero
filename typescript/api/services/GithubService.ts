@@ -24,7 +24,7 @@ export module Services {
 					 token: 'MY_OAUTH_TOKEN'
 				 */
       });
-      const user = gh.getUser(username);
+      const user = gh.getUser();
       const filterOpts = {
         type: 'owner',
         sort: 'updated',
