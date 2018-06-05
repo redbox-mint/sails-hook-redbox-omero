@@ -60,7 +60,6 @@ export module Services.Core {
           console.error('The method "' + methods[i] + '" does not exist on the controller ' + this);
         }
       }
-
       return exportedMethods;
     }
   }

@@ -1,5 +1,5 @@
 module.exports.recordtype = {
-  "github": {
+  "omero": {
     "packageType": "workspace",
     searchFilters: [
       {

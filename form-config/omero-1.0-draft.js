@@ -1,9 +1,9 @@
 /**
- * github form
+ * omero form
  */
 module.exports = {
-  name: 'github-1.0-draft',
-  type: 'github',
+  name: 'omero-1.0-draft',
+  type: 'omero',
   skipValidationOnSave: true,
   editCssClasses: 'row col-md-12',
   viewCssClasses: 'row col-md-offset-1 col-md-10',
@@ -20,7 +20,7 @@ module.exports = {
       viewOnly: false,
       definition: {
         name: 'title',
-        value: 'GitHub',
+        value: 'OMERO',
         type: 'h2'
       }
     }

@@ -1,11 +1,11 @@
 const _ = require('lodash');
 
-const GithubService = require('./api/services/GithubService');
-const GithubController = require('./api/controllers/GithubController');
+const OMEROService = require('./api/services/OMEROService');
+const OMEROController = require('./api/controllers/OMEROController');
 
 const recordTypeConfig = require('./config/recordtype');
 const workflowConfig = require('./config/workflow');
-const recordFormConfig = require('./form-config/github-1.0-draft');
+const recordFormConfig = require('./form-config/omero-1.0-draft');
 
 module.exports = function (sails) {
   return {
@@ -18,14 +18,14 @@ module.exports = function (sails) {
     routes: {
       before: {},
       after: {
-        'get /:branding/:portal/ws/github/projects': GithubController.projects
+        'get /:branding/:portal/ws/omero/projects': function(){return 'hello'}
       }
     },
     configure: function () {
-      sails.services['GithubService'] = GithubService;
+      sails.services['OMEROService'] = OMEROService;
       sails.config = _.merge(sails.config, recordTypeConfig);
       sails.config = _.merge(sails.config, workflowConfig);
-      sails.config['form']['forms'] = _.merge(sails.config['form']['forms'], {'github-1.0-draft': recordFormConfig});
+      sails.config['form']['forms'] = _.merge(sails.config['form']['forms'], {'omero-1.0-draft': recordFormConfig});
     }
   }
 };

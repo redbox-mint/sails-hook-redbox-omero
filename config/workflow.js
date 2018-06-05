@@ -1,5 +1,5 @@
 module.exports.workflow = {
-  "github": {
+  "omero": {
     "draft": {
       config: {
         workflow: {
@@ -10,7 +10,7 @@ module.exports.workflow = {
           viewRoles: ['Admin', 'Librarians'],
           editRoles: ['Admin', 'Librarians']
         },
-        form: 'github-1.0-draft'
+        form: 'omero-1.0-draft'
       },
       starting: true
     }

@@ -1,5 +1,6 @@
 declare var _;
 declare var sails: Sails;
+
 const _ = require('lodash');
 
 import pathExists = require('path-exists');

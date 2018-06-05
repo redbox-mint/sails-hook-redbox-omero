@@ -2,7 +2,7 @@ const Sails = require('sails').Sails;
 const assert = require('assert');
 var supertest = require('supertest');
 
-const GithubService = require('../api/services/GithubService');
+const OMEROService = require('../api/services/OMEROService');
 
 describe('Basic tests ::', function () {
 
@@ -18,12 +18,13 @@ describe('Basic tests ::', function () {
     Sails().lift({
       hooks: {
         // Load the hook
-        "sails-hook-redbox-github": require('../index.js'),
+        "omero": require('../index.js'),
         // Skip grunt (unless your hook uses it)
         "grunt": false
       },
       form: {forms: {}}, //Mock forms to test hook.configure()
-      log: {level: "error"}
+      log: {level: "error"},
+      global: true //add sails to a global variable
     }, function (err, _sails) {
       if (err) return done(err);
       sails = _sails;
@@ -32,20 +33,20 @@ describe('Basic tests ::', function () {
   });
 
   it('should have a form', function (done) {
-    const type = sails.config['form']['forms']['github-1.0-draft']['type'];
-    assert.equal(type, 'github');
+    const type = sails.config['form']['forms']['omero-1.0-draft']['type'];
+    assert.equal(type, 'omero');
     done();
   });
 
   it('should have a recordtype', function (done) {
-    const github = sails.config['recordtype']['github'];
-    assert.equal(github['packageType'], 'workspace');
+    const omero = sails.config['recordtype']['omero'];
+    assert.equal(omero['packageType'], 'workspace');
     done();
   });
 
   it('should have a workflow form', function (done) {
-    const github = sails.config['workflow']['github'];
-    assert.equal(github['draft']['config']['form'], 'github-1.0-draft');
+    const omero = sails.config['workflow']['omero'];
+    assert.equal(omero['draft']['config']['form'], 'omero-1.0-draft');
     done();
   });
 
