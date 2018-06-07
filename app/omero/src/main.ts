@@ -8,5 +8,4 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(OMEROModule)
-  .catch(err => console.log(err));
+platformBrowserDynamic().bootstrapModule(OMEROModule);

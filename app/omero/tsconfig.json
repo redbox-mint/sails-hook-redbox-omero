@@ -14,9 +14,6 @@
     "lib": [
       "es2017",
       "dom"
-    ],
-    "types": [
-      "jquery"
     ]
   },
   "include": [
@@ -28,4 +25,5 @@
     "node_modules",
     "**/*.spec.ts"
   ]
+
 }

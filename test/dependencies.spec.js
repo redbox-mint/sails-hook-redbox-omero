@@ -32,6 +32,7 @@ describe('Basic tests ::', function () {
     });
   });
 
+
   it('should have a form', function (done) {
     const type = sails.config['form']['forms']['omero-1.0-draft']['type'];
     assert.equal(type, 'omero');
@@ -47,6 +48,11 @@ describe('Basic tests ::', function () {
   it('should have a workflow form', function (done) {
     const omero = sails.config['workflow']['omero'];
     assert.equal(omero['draft']['config']['form'], 'omero-1.0-draft');
+    done();
+  });
+
+  it('should have a workspace env config', function (done) {
+    const config = sails.workspaces;
     done();
   });
 

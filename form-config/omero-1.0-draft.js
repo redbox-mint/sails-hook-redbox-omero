@@ -122,7 +122,6 @@ module.exports = {
       showHeader: true,
       definition: {
         name: 'LoginWorkspaceApp',
-        permissionStep: 'The provisioner requires permission to create a workspace on your behalf',
         usernameLabel: 'username',
         passwordLabel: 'password',
         loginLabel: 'Login',

@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const ncp = require('ncp');
 
 const OMEROService = require('./api/services/OMEROService');
 const OMEROController = require('./api/controllers/OMEROController');

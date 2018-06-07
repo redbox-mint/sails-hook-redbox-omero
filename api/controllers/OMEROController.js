@@ -26,30 +26,11 @@ var Controllers;
                 'link'
             ];
             _this.config = new Config();
-            var OMEROConfig = sails.config.local.workspaces.omero;
-            var workspaceConfig = sails.config.local.workspaces;
-            _this.config = {
-                host: OMEROConfig.host,
-                recordType: OMEROConfig.recordType,
-                workflowStage: OMEROConfig.workflowStage,
-                formName: OMEROConfig.formName,
-                appName: OMEROConfig.appName,
-                domain: OMEROConfig.domain,
-                parentRecord: workspaceConfig.parentRecord,
-                provisionerUser: workspaceConfig.provisionerUser,
-                serverId: OMEROConfig.serverId,
-                appId: OMEROConfig.appId,
-                brandingAndPortalUrl: '',
-                redboxHeaders: {
-                    'Cache-Control': 'no-cache',
-                    'Content-Type': 'application/json',
-                    'Authorization': '',
-                }
-            };
             return _this;
         }
         OMEROController.prototype.login = function (req, res) {
             var _this = this;
+            this.config.setSails(req.sails);
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -102,6 +83,7 @@ var Controllers;
         };
         OMEROController.prototype.projects = function (req, res) {
             var _this = this;
+            this.config.setSails(req.sails);
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -126,6 +108,7 @@ var Controllers;
         };
         OMEROController.prototype.create = function (req, res) {
             var _this = this;
+            this.config.setSails(req.sails);
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -158,6 +141,7 @@ var Controllers;
         };
         OMEROController.prototype.link = function (req, res) {
             var _this = this;
+            this.config.setSails(req.sails);
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -257,6 +241,29 @@ var Controllers;
     var Config = (function () {
         function Config() {
         }
+        Config.prototype.setSails = function (reqSails) {
+            sails = reqSails;
+        };
+        Config.prototype.set = function () {
+            var OMEROConfig = sails.workspaces.omero;
+            var workspaceConfig = sails.workspaces;
+            this.host = OMEROConfig.host;
+            this.recordType = OMEROConfig.recordType;
+            this.workflowStage = OMEROConfig.workflowStage;
+            this.formName = OMEROConfig.formName;
+            this.appName = OMEROConfig.appName;
+            this.domain = OMEROConfig.domain;
+            this.parentRecord = workspaceConfig.parentRecord;
+            this.provisionerUser = workspaceConfig.provisionerUser;
+            this.serverId = OMEROConfig.serverId;
+            this.appId = OMEROConfig.appId;
+            this.brandingAndPortalUrl = '';
+            this.redboxHeaders = {
+                'Cache-Control': 'no-cache',
+                'Content-Type': 'application/json',
+                'Authorization': '',
+            };
+        };
         return Config;
     }());
 })(Controllers = exports.Controllers || (exports.Controllers = {}));

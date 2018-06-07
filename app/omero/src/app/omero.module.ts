@@ -16,14 +16,14 @@ import { CreateWorkspaceComponent } from './components/create-workspace.componen
   imports: [ BrowserModule, HttpModule, ReactiveFormsModule,
     SharedModule, FormsModule
   ],
-  declarations: [ OMEROFormComponent, WorkspaceFieldComponent,
+  declarations: [ OMEROFormComponent,
     ListWorkspaceDataComponent, LoginWorkspaceAppComponent,
     LinkModalWorkspaceComponent, CreateWorkspaceComponent
   ],
-  exports: [ WorkspaceFieldComponent ],
+  exports: [  ],
   providers: [ OMEROService ],
   bootstrap: [ OMEROFormComponent ],
-  entryComponents: [ WorkspaceFieldComponent, LoginWorkspaceAppComponent,
+  entryComponents: [ LoginWorkspaceAppComponent,
   ListWorkspaceDataComponent, LinkModalWorkspaceComponent,
   CreateWorkspaceComponent
  ]

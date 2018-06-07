@@ -1,5 +1,7 @@
 declare var module;
 declare var sails, Model;
+declare var _;
+
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/operator/map';
 
@@ -23,34 +25,17 @@ export module Controllers {
       'create',
       'link'
     ];
+    _config: any;
+
     protected config: any;
 
     constructor() {
       super();
       this.config = new Config();
-      const OMEROConfig = sails.config.local.workspaces.omero;
-      const workspaceConfig = sails.config.local.workspaces;
-      this.config = {
-        host: OMEROConfig.host,
-        recordType: OMEROConfig.recordType,
-        workflowStage: OMEROConfig.workflowStage,
-        formName: OMEROConfig.formName,
-        appName: OMEROConfig.appName,
-        domain: OMEROConfig.domain,
-        parentRecord: workspaceConfig.parentRecord,
-        provisionerUser: workspaceConfig.provisionerUser,
-        serverId: OMEROConfig.serverId,
-        appId: OMEROConfig.appId,
-        brandingAndPortalUrl: '',
-        redboxHeaders:  {
-          'Cache-Control': 'no-cache',
-          'Content-Type': 'application/json',
-          'Authorization': '',
-        }
-      }
     }
 
     login(req, res) {
+      this.config.setSails(req.sails);
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -61,7 +46,6 @@ export module Controllers {
         let csrf: any = {};
         let info = {};
         const userId = req.user.id;
-
         OMEROService.csrf(this.config)
           .flatMap(response => {
             csrf = JSON.parse(response);
@@ -84,9 +68,9 @@ export module Controllers {
             return WorkspaceService.createWorkspaceInfo(userId, this.config.appName, info);
           })
           .flatMap(response => {
-            if(response.id && response.info !== info) {
+            if (response.id && response.info !== info) {
               return WorkspaceService.updateWorkspaceInfo(response.id, info);
-            }else {
+            } else {
               return Observable.of('');
             }
           })
@@ -103,6 +87,7 @@ export module Controllers {
     }
 
     projects(req, res) {
+      this.config.setSails(req.sails);
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -126,6 +111,7 @@ export module Controllers {
     }
 
     create(req, res) {
+      this.config.setSails(req.sails);
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -143,7 +129,7 @@ export module Controllers {
             sails.log.debug('createProject');
             sails.log.debug(response);
             let status = true;
-            if(response.bad === 'true'){
+            if (response.bad === 'true') {
               status = false;
             }
             const data = {status: status, create: JSON.parse(response)};
@@ -157,6 +143,7 @@ export module Controllers {
     }
 
     link(req, res) {
+      this.config.setSails(req.sails);
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -191,7 +178,7 @@ export module Controllers {
             mapAnnotation = annotations;
             //Check whether there is a workspace created
             const ann = _.first(this.findAnnotation('stash', mapAnnotation));
-            if(!ann) {
+            if (!ann) {
               rowAnnotation = undefined;
               idAnnotation = undefined;
               return this.createAnnotation({
@@ -210,7 +197,7 @@ export module Controllers {
       }
     }
 
-    createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp}){
+    createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp}) {
       sails.log.debug('createWorkspaceRecord');
       return WorkspaceService.provisionerUser(this.config.provisionerUser)
         .flatMap(response => {
@@ -274,6 +261,33 @@ export module Controllers {
     provisionerUser: string;
     brandingAndPortalUrl: string;
     redboxHeaders: any;
+    domain: string;
+
+    setSails(reqSails) {
+      sails = reqSails;
+    }
+
+    set(){
+      const OMEROConfig = sails.workspaces.omero;
+      const workspaceConfig = sails.workspaces;
+      this.host = OMEROConfig.host;
+      this.recordType = OMEROConfig.recordType;
+      this.workflowStage = OMEROConfig.workflowStage;
+      this.formName = OMEROConfig.formName;
+      this.appName = OMEROConfig.appName;
+      this.domain = OMEROConfig.domain;
+      this.parentRecord = workspaceConfig.parentRecord;
+      this.provisionerUser = workspaceConfig.provisionerUser;
+      this.serverId = OMEROConfig.serverId;
+      this.appId = OMEROConfig.appId;
+      this.brandingAndPortalUrl = '';
+      this.redboxHeaders = {
+        'Cache-Control': 'no-cache',
+        'Content-Type': 'application/json',
+        'Authorization': '',
+      };
+
+    }
   }
 
 }

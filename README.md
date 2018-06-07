@@ -72,3 +72,16 @@ $ npm test
 ```
 
 For more information on testing your hook go to : https://sailsjs.com/documentation/concepts/testing
+
+
+## Development in redbox-portal
+
+There are several ways to code against it.
+
+If you are using vagrant, place the code inside of the same machine/docker and do 
+
+```bash
+npm link
+npm link sails-hook-redbox-omero
+```
+

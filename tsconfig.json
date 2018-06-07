@@ -32,5 +32,10 @@
   "buildOnSave": false,
   "atom": {
     "rewriteTsconfig": false
+  },
+  "paths": {
+    "lodash/*": [
+      "node_modules/@types/lodash-es/*"
+    ]
   }
 }
