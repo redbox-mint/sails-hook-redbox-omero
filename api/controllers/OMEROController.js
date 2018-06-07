@@ -30,7 +30,8 @@ var Controllers;
         }
         OMEROController.prototype.login = function (req, res) {
             var _this = this;
-            this.config.setSails(req.sails);
+            console.log(sails);
+            this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -83,7 +84,8 @@ var Controllers;
         };
         OMEROController.prototype.projects = function (req, res) {
             var _this = this;
-            this.config.setSails(req.sails);
+            console.log(sails);
+            this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -108,7 +110,7 @@ var Controllers;
         };
         OMEROController.prototype.create = function (req, res) {
             var _this = this;
-            this.config.setSails(req.sails);
+            this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -141,7 +143,7 @@ var Controllers;
         };
         OMEROController.prototype.link = function (req, res) {
             var _this = this;
-            this.config.setSails(req.sails);
+            this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
             }
@@ -241,12 +243,9 @@ var Controllers;
     var Config = (function () {
         function Config() {
         }
-        Config.prototype.setSails = function (reqSails) {
-            sails = reqSails;
-        };
         Config.prototype.set = function () {
-            var OMEROConfig = sails.workspaces.omero;
-            var workspaceConfig = sails.workspaces;
+            var workspaceConfig = sails.config.workspaces;
+            var OMEROConfig = workspaceConfig.omero;
             this.host = OMEROConfig.host;
             this.recordType = OMEROConfig.recordType;
             this.workflowStage = OMEROConfig.workflowStage;

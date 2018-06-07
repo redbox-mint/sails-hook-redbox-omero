@@ -35,7 +35,8 @@ export module Controllers {
     }
 
     login(req, res) {
-      this.config.setSails(req.sails);
+      console.log(sails);
+      this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -87,7 +88,8 @@ export module Controllers {
     }
 
     projects(req, res) {
-      this.config.setSails(req.sails);
+      console.log(sails);
+      this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -111,7 +113,7 @@ export module Controllers {
     }
 
     create(req, res) {
-      this.config.setSails(req.sails);
+      this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -143,7 +145,7 @@ export module Controllers {
     }
 
     link(req, res) {
-      this.config.setSails(req.sails);
+      this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
@@ -263,13 +265,10 @@ export module Controllers {
     redboxHeaders: any;
     domain: string;
 
-    setSails(reqSails) {
-      sails = reqSails;
-    }
-
     set(){
-      const OMEROConfig = sails.workspaces.omero;
-      const workspaceConfig = sails.workspaces;
+      const workspaceConfig = sails.config.workspaces;
+      const OMEROConfig = workspaceConfig.omero;
+
       this.host = OMEROConfig.host;
       this.recordType = OMEROConfig.recordType;
       this.workflowStage = OMEROConfig.workflowStage;
