@@ -35,7 +35,6 @@ export module Controllers {
     }
 
     login(req, res) {
-      console.log(sails);
       this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
@@ -50,18 +49,18 @@ export module Controllers {
         OMEROService.csrf(this.config)
           .flatMap(response => {
             csrf = JSON.parse(response);
+            sails.log.debug(csrf.data);
             return OMEROService.login(this.config, csrf.data, user);
           })
           .flatMap(response => {
             const cookies = response.headers['set-cookie'];
-
             const body = JSON.parse(response.body);
             const login = body.eventContext;
             const sessionUuid = login.sessionUuid;
-            const cookieJar = WorkspaceService.getCookies(cookies);
+            const cookieJar = OMEROService.getCookies(cookies);
             info = {
               csrf: csrf.data,
-              sessionid: WorkspaceService.getCookieValue(cookieJar, 'sessionid'),
+              sessionid: OMEROService.getCookieValue(cookieJar, 'sessionid'),
               sessionUuid: sessionUuid,
               memberOfGroups: login.memberOfGroups,
               groupId: login.groupId
@@ -82,13 +81,13 @@ export module Controllers {
           }, error => {
             const errorMessage = `Failed to login for user ${user.username}`;
             sails.log.error(errorMessage);
-            this.ajaxFail(req, res, errorMessage, error);
+            sails.log.error(this.config.host + ' => ' + this.config.domain);
+            this.ajaxFail(req, res, errorMessage, {status: false, message: errorMessage});
           });
       }
     }
 
     projects(req, res) {
-      console.log(sails);
       this.config.set();
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
@@ -265,7 +264,7 @@ export module Controllers {
     redboxHeaders: any;
     domain: string;
 
-    set(){
+    set() {
       const workspaceConfig = sails.config.workspaces;
       const OMEROConfig = workspaceConfig.omero;
 

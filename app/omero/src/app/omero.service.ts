@@ -5,8 +5,8 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/delay';
 import {Observable} from 'rxjs/Observable';
 
-import {BaseService} from "./shared/base-service";
-import {ConfigService} from "./shared/config-service";
+import {BaseService} from './shared/base-service';
+import {ConfigService} from './shared/config-service';
 
 @Injectable()
 export class OMEROService extends BaseService {

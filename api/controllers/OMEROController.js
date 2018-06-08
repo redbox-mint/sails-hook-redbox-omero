@@ -30,7 +30,6 @@ var Controllers;
         }
         OMEROController.prototype.login = function (req, res) {
             var _this = this;
-            console.log(sails);
             this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");
@@ -46,6 +45,7 @@ var Controllers;
                 OMEROService.csrf(this.config)
                     .flatMap(function (response) {
                     csrf_1 = JSON.parse(response);
+                    sails.log.debug(csrf_1.data);
                     return OMEROService.login(_this.config, csrf_1.data, user_1);
                 })
                     .flatMap(function (response) {
@@ -53,10 +53,10 @@ var Controllers;
                     var body = JSON.parse(response.body);
                     var login = body.eventContext;
                     var sessionUuid = login.sessionUuid;
-                    var cookieJar = WorkspaceService.getCookies(cookies);
+                    var cookieJar = OMEROService.getCookies(cookies);
                     info_1 = {
                         csrf: csrf_1.data,
-                        sessionid: WorkspaceService.getCookieValue(cookieJar, 'sessionid'),
+                        sessionid: OMEROService.getCookieValue(cookieJar, 'sessionid'),
                         sessionUuid: sessionUuid,
                         memberOfGroups: login.memberOfGroups,
                         groupId: login.groupId
@@ -78,13 +78,13 @@ var Controllers;
                 }, function (error) {
                     var errorMessage = "Failed to login for user " + user_1.username;
                     sails.log.error(errorMessage);
-                    _this.ajaxFail(req, res, errorMessage, error);
+                    sails.log.error(_this.config.host + ' => ' + _this.config.domain);
+                    _this.ajaxFail(req, res, errorMessage, { status: false, message: errorMessage });
                 });
             }
         };
         OMEROController.prototype.projects = function (req, res) {
             var _this = this;
-            console.log(sails);
             this.config.set();
             if (!req.isAuthenticated()) {
                 this.ajaxFail(req, res, "User not authenticated");

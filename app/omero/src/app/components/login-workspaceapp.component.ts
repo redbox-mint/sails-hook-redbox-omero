@@ -1,20 +1,20 @@
-import { Output, EventEmitter, Component, OnInit, Inject, Injector} from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { SimpleComponent } from '../shared/form/field-simple.component';
-import { FieldBase } from '../shared/form/field-base';
+import {Output, EventEmitter, Component, OnInit, Inject, Injector} from '@angular/core';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {SimpleComponent} from '../shared/form/field-simple.component';
+import {FieldBase} from '../shared/form/field-base';
 import * as _ from "lodash-es";
 
 // STEST-22
 declare var jQuery: any;
 
-import { OMEROService } from '../omero.service';
+import {OMEROService} from '../omero.service';
 
 /**
-* Contributor Model
-*
-* @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
-*
-*/
+ * Contributor Model
+ *
+ * @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
+ *
+ */
 export class LoginWorkspaceAppField extends FieldBase<any> {
 
   showHeader: boolean;
@@ -34,6 +34,7 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
   permissionList: object[];
   allowLabel: string;
   closeLabel: string;
+  cannotLoginMessage: string;
 
   omeroService: OMEROService;
   @Output() listWorkspaces: EventEmitter<any> = new EventEmitter<any>();
@@ -51,6 +52,7 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
     this.permissionLabel = options['permissionLabel'] || '';
     this.allowLabel = options['allowLabel'] || 'Allow';
     this.closeLabel = options['closeLabel'] || 'Close';
+    this.cannotLoginMessage = options['cannotLoginMessage'] || 'There was a problem login in, please try again'
   }
 
   registerEvents() {
@@ -59,7 +61,7 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
     //this.fieldMap._rootComp['loginMessage'].subscribe(that.displayLoginMessage);
   }
 
-  revoke(){
+  revoke() {
     this.checkLogin(false);
   }
 
@@ -82,8 +84,8 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
     return this.formModel;
   }
 
-  setValue(value:any) {
-    this.formModel.patchValue(value, {emitEvent: false });
+  setValue(value: any) {
+    this.formModel.patchValue(value, {emitEvent: false});
     this.formModel.markAsTouched();
   }
 
@@ -93,9 +95,9 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
   }
 
   validate(value: any) {
-    if(value.username && value.password) {
+    if (value.username && value.password) {
       jQuery('#loginPermissionModal').modal('show');
-    }else {
+    } else {
       this.loginError = true;
     }
   }
@@ -104,8 +106,12 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
     //this.loginSubmitted.emit(value);
     jQuery('#loginPermissionModal').modal('hide');
     this.omeroService.session(value).then((response: any) => {
-      if(!response.status){
-        this.displayLoginMessage({error: true, value: response.error.error_description});
+      if (!response.status) {
+        if (!response.message) {
+          this.displayLoginMessage({error: true, value: this.cannotLoginMessage});
+        } else {
+          this.displayLoginMessage({error: true, value: response.message});
+        }
         this.loggedIn = false;
       } else {
         this.displayLoginMessage({error: false, value: ''});
@@ -123,52 +129,54 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
 
 
 /**
-* Component that log's in to a workspace app
-*
-*/
+ * Component that log's in to a workspace app
+ *
+ */
 @Component({
   selector: 'ws-login',
   template: `
-  <div *ngIf="!field.loggedIn && field.isLoaded" class="padding-bottom-10">
-    <div class="">
-      <h4>{{ field.permissionStep }}</h4>
-      <form #form="ngForm"  novalidate autocomplete="off">
-        <div class="form-group">
-          <label>{{ field.usernameLabel }}</label>
-          <input type="text" class="form-control" name="username" ngModel>
-        </div>
-        <div class="form-group">
-          <label>{{ field.passwordLabel }}</label>
-          <input type="password" class="form-control" name="password" ngModel>
-        </div>
-        <button (click)="field.validate(form.value)" class="btn btn-primary"
-        type="submit">{{ field.loginLabel }}</button>
-        <div class="row"><br/></div>
-        <div class="alert alert-danger" *ngIf="field.loginError">
-          {{field.loginErrorMessage}}
-        </div>
-      </form>
-    </div>
-    <div id="loginPermissionModal" class="modal fade">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">{{ field.permissionLabel }}</h4>
+    <div *ngIf="!field.loggedIn && field.isLoaded" class="padding-bottom-10">
+      <div class="">
+        <h4>{{ field.permissionStep }}</h4>
+        <form #form="ngForm" novalidate autocomplete="off">
+          <div class="form-group">
+            <label>{{ field.usernameLabel }}</label>
+            <input type="text" class="form-control" name="username" ngModel>
           </div>
-          <div class="modal-body">
-          <p>{{ field.permissionStep }}</p>
-          <ul>
-            <li *ngFor="let permission of field.permissionList">{{ permission }}</li>
-          </ul>
+          <div class="form-group">
+            <label>{{ field.passwordLabel }}</label>
+            <input type="password" class="form-control" name="password" ngModel>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" (click)="field.allow(form.value)">{{ field.allowLabel }}</button>
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ field.closeLabel }}</button>
+          <button (click)="field.validate(form.value)" class="btn btn-primary"
+                  type="submit">{{ field.loginLabel }}
+          </button>
+          <div class="row"><br/></div>
+          <div class="alert alert-danger" *ngIf="field.loginError">
+            {{field.loginErrorMessage}}
+          </div>
+        </form>
+      </div>
+      <div id="loginPermissionModal" class="modal fade">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title">{{ field.permissionLabel }}</h4>
+            </div>
+            <div class="modal-body">
+              <p>{{ field.permissionStep }}</p>
+              <ul>
+                <li *ngFor="let permission of field.permissionList">{{ permission }}</li>
+              </ul>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-primary" (click)="field.allow(form.value)">{{ field.allowLabel }}
+              </button>
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ field.closeLabel }}</button>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   `
 })
 export class LoginWorkspaceAppComponent extends SimpleComponent {

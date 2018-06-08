@@ -132,7 +132,8 @@ module.exports = {
         ],
         allowLabel: 'Allow',
         closeLabel: 'Close',
-        loginErrorMessage: 'Please include username and password'
+        loginErrorMessage: 'Please include username and password',
+        cannotLoginMessage: 'There was a problem login in, please try again'
       }
     },
     {
@@ -141,7 +142,7 @@ module.exports = {
       definition: {
         name: "BackToPlan",
         label: 'Back to your Plan',
-        value: '/@branding/@portal/record/view/',
+        value: '/@branding/@portal/record/edit/',
         cssClasses: 'btn btn-large btn-info',
         showPencil: false,
         controlType: 'anchor'

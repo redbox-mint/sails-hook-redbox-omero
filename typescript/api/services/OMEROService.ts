@@ -1,11 +1,12 @@
 import {Observable, Scheduler} from 'rxjs/Rx';
-import {Sails, Model} from "sails";
-import * as request from "request-promise";
+import {Sails, Model} from 'sails';
+import * as requestPromise from 'request-promise';
 import * as tough from "tough-cookie";
+declare var _;
 
 import services = require('../core/CoreService.js');
 
-declare var RecordsService, BrandingService, WorkspaceService;
+declare var RecordsService, BrandingService;
 declare var sails: Sails;
 declare var _this;
 declare var Institution, User: Model;
@@ -20,24 +21,53 @@ export module Services {
       'projects',
       'createContainer',
       'annotateMap',
-      'annotations'
+      'annotations',
+      'getCookies',
+      'getCookieValue'
     ];
 
     constructor() {
       super();
     }
 
+    cookieJar(jar: any, config:any, key: string, value: string){
+      const keyvalue = key + '=' + value;
+      const cookie = requestPromise.cookie('' + keyvalue);
+      jar.setCookie(cookie, config.host, function(error, cookie) {
+        sails.log.debug(cookie);
+      });
+      return jar;
+    }
+
+    getCookies(cookies) {
+      const cookieJar = [];
+      cookies.forEach((rawcookies) => {
+        var cookie = requestPromise.cookie(rawcookies);
+        cookieJar.push({key: cookie.key, value: cookie.value, expires: cookie.expires});
+      });
+      return cookieJar;
+    }
+
+    getCookieValue(cookieJar, key) {
+      const cookie = _.find(cookieJar, {key: key});
+      if(cookie) {
+        return cookie['value'];
+      }else return '';
+    }
+
+
     csrf(config: any) {
-      const get = request({
+      const get = requestPromise({
         uri: `${config.host}/api/v0/token/`
       });
       return Observable.fromPromise(get);
     }
 
     login(config: any, csrf: string, user: any) {
-      let jar = request.jar();
-      jar = WorkspaceService.cookieJar(jar, config, 'csrftoken', csrf);
-      const post = request({
+      sails.log.debug('login');
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', csrf);
+      const post = requestPromise({
         uri: `${config.host}/api/v0/login/`,
         method: 'POST',
         formData: {
@@ -55,10 +85,10 @@ export module Services {
     }
 
     projects(config: any, csrf: string, sessionid: string, sessionUuid: string) {
-      let jar = request.jar();
-      jar = WorkspaceService.cookieJar(jar, config, 'csrftoken', csrf);
-      jar = WorkspaceService.cookieJar(jar, config, 'sessionid', sessionid);
-      const get = request({
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', sessionid);
+      const get = requestPromise({
         uri: `${config.host}/api/v0/m/projects/`,
         jar: jar,
         headers: {
@@ -70,10 +100,10 @@ export module Services {
     }
 
     createContainer(config: any, app: any, project: any) {
-      let jar = request.jar();
-      jar = WorkspaceService.cookieJar(jar, config, 'csrftoken', app.csrf);
-      jar = WorkspaceService.cookieJar(jar, config, 'sessionid', app.sessionid);
-      const post = request({
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+      const post = requestPromise({
         uri: `${config.host}/webclient/action/addnewcontainer/`,
         method: 'POST',
         jar: jar,
@@ -92,9 +122,9 @@ export module Services {
     }
 
     annotateMap({config, app, id, annId, mapAnnotation}){
-      let jar = request.jar();
-      jar = WorkspaceService.cookieJar(jar, config, 'csrftoken', app.csrf);
-      jar = WorkspaceService.cookieJar(jar, config, 'sessionid', app.sessionid);
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
       const formData = {
         project: id,
         mapAnnotation: JSON.stringify(mapAnnotation)
@@ -102,7 +132,7 @@ export module Services {
       if(annId) {
         formData['annId'] = annId
       }
-      const post = request({
+      const post = requestPromise({
         uri: `${config.host}/webclient/annotate_map/`,
         method: 'POST',
         jar: jar,
@@ -121,10 +151,10 @@ export module Services {
       //Return: {"annotations":
       //[{"description": null, "class": "MapAnnotationI", "date": "2018-03-07T06:28:24Z", "link": {"owner": {"id": 2}, "date": "2018-03-07T06:28:24Z", "id": 5, "parent": {"id": 2, "name": "test-project", "class": "ProjectI"}, "permissions": {"canAnnotate": true, "canEdit": true, "canDelete": true, "canLink": true}}, "owner": {"id": 2}, "values": [["stash", "123123123"]], "ns": "openmicroscopy.org/omero/client/mapAnnotation", "id": 5, "permissions": {"canAnnotate": true, "canEdit": true,"canDelete": true, "canLink": true}}], "experimenters": [{"lastName": "Sacal Bonequi", "omeName": "135553", "id": 2, "firstName": "Moises"}]
       //}
-      let jar = request.jar();
-      jar = WorkspaceService.cookieJar(jar, config, 'csrftoken', app.csrf);
-      jar = WorkspaceService.cookieJar(jar, config, 'sessionid', app.sessionid);
-      const get = request({
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+      const get = requestPromise({
         uri: `${config.host}/webclient/api/annotations/?type=map&project=${id}`,
         jar: jar,
         headers: {
