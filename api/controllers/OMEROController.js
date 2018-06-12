@@ -61,14 +61,14 @@ var Controllers;
                         memberOfGroups: login.memberOfGroups,
                         groupId: login.groupId
                     };
-                    return WorkspaceService.createWorkspaceInfo(userId_1, _this.config.appName, info_1);
+                    return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
                 })
                     .flatMap(function (response) {
                     if (response.id && response.info !== info_1) {
                         return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
                     }
                     else {
-                        return Rx_1.Observable.of('');
+                        return WorkspaceService.createWorkspaceInfo(userId_1, _this.config.appName, info_1);
                     }
                 })
                     .subscribe(function (response) {
@@ -94,8 +94,13 @@ var Controllers;
                 return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
                     .flatMap(function (response) {
                     sails.log.debug('userInfo');
-                    var app = response.info;
-                    return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid);
+                    if (response.info) {
+                        var app = response.info;
+                        return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid);
+                    }
+                    else {
+                        throw new Error('Missing application credentials');
+                    }
                 })
                     .subscribe(function (response) {
                     sails.log.debug('projects');
@@ -148,7 +153,7 @@ var Controllers;
                 this.ajaxFail(req, res, "User not authenticated");
             }
             else {
-                this.config.brandingAndPortalUrl = sails.getBaseUrl() + BrandingService.getBrandAndPortalPath(req);
+                this.config.brandingAndPortalUrl = BrandingService.getFullPath(req);
                 var userId = req.user.id;
                 var username_1 = req.user.username;
                 var project = req.param('project');

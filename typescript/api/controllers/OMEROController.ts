@@ -65,13 +65,13 @@ export module Controllers {
               memberOfGroups: login.memberOfGroups,
               groupId: login.groupId
             };
-            return WorkspaceService.createWorkspaceInfo(userId, this.config.appName, info);
+            return WorkspaceService.updateWorkspaceInfo(response.id, info);
           })
           .flatMap(response => {
             if (response.id && response.info !== info) {
               return WorkspaceService.updateWorkspaceInfo(response.id, info);
             } else {
-              return Observable.of('');
+              return WorkspaceService.createWorkspaceInfo(userId, this.config.appName, info);
             }
           })
           .subscribe(response => {
@@ -96,8 +96,12 @@ export module Controllers {
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
             sails.log.debug('userInfo');
-            const app = response.info;
-            return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid);
+            if(response.info) {
+              const app = response.info;
+              return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid);
+            } else {
+              throw new Error('Missing application credentials');
+            }
           })
           .subscribe(response => {
             sails.log.debug('projects');
@@ -148,7 +152,7 @@ export module Controllers {
       if (!req.isAuthenticated()) {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
-        this.config.brandingAndPortalUrl = sails.getBaseUrl() + BrandingService.getBrandAndPortalPath(req);
+        this.config.brandingAndPortalUrl = BrandingService.getFullPath(req);
         const userId = req.user.id;
         const username = req.user.username;
         const project = req.param('project');
