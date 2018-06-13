@@ -37,6 +37,7 @@ export class CreateWorkspaceField extends FieldBase<any> {
   workspaceCreated: string;
   linkingWorkspace: string;
   creatingWorkspace: string;
+  workspaceLink: string;
 
   validations: any[];
   loadingModal: boolean;
@@ -79,6 +80,7 @@ export class CreateWorkspaceField extends FieldBase<any> {
     this.workspaceCreated = options['workspaceCreated'] || '';
     this.linkingWorkspace = options['linkingWorkspace'] || '';
     this.creatingWorkspace = options['creatingWorkspace'] || '';
+    this.workspaceLink = options['workspaceLink'] || '';
   }
 
   init() {
@@ -141,9 +143,9 @@ export class CreateWorkspaceField extends FieldBase<any> {
     if(this.creation.nameHasSpaces()) {
       validateWorkspace.push({message: this.nameHasSpacesValidation});
     }
-    // if(!this.creation.description) {
-    //   validateWorkspace.push({message: this.descriptionWorkspaceValidation});
-    // }
+    if(!this.creation.description) {
+      validateWorkspace.push({message: this.descriptionWorkspaceValidation});
+    }
     return validateWorkspace;
   }
 
@@ -153,11 +155,11 @@ export class CreateWorkspaceField extends FieldBase<any> {
     .then(response => {
       if(!response.status) {
         //TODO: improve this assignment in case of error.
-        const name = response.message.error.error.message.name || '';
-        throw new Error('Name ' + _.first(name));
+        throw new Error('Error creating workspace');
       } else {
-        this.creationAlert.set({message: this.linkingWorkspace, status: 'working', className: 'warning'});
+        this.creationAlert.set({message: this.linkingWorkspace, status: 'linking', className: 'warning'});
         this.creation.id = response.create['id'];
+        this.creation.location = this.workspaceLink + this.creation.id;
         return this.omeroService.link({
           rdmp: this.rdmp, project: this.creation, recordMap: this.recordMap
         })

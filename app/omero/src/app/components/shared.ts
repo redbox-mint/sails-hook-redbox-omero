@@ -26,8 +26,10 @@ export class Creation {
   description: string = '';
   group: any;
   validateMessage: string;
+  location: string;
 
   clear() {
+    this.location = '';
     this.description = '';
     this.name = '';
     this.id = '';
@@ -58,5 +60,6 @@ export class CreationAlert {
 
 export class CurrentWorkspace {
   path_with_namespace: string = '';
-  web_url: string = ''
+  web_url: string = '';
+  location: string;
 }

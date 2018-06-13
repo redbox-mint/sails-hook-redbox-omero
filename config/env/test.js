@@ -18,6 +18,9 @@ module.exports = {
    ***************************************************************************/
 
   workspaces: {
+    portal:{
+      authorization: 'Bearer 123123'
+    },
     provisionerUser: 'admin',
     parentRecord: 'rdmp',
     omero: {
@@ -27,7 +30,9 @@ module.exports = {
       appName: 'omero',
       appId: 'omero-test',
       recordType: 'omero',
-      host: 'https://omero.com'
+      host: 'https://omero-dev.research.uts.edu.au',
+      domain: 'omero-dev.research.uts.edu.au',
+      serverId: '1'
     }
   }
 };

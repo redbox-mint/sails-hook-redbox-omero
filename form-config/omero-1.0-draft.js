@@ -69,12 +69,13 @@ module.exports = {
           {label: 'URL', name: 'web_url'}
         ],
         recordMap: [
-          {record: 'title', ele: 'title'},
+          {record: 'title', ele: 'Name'},
           {record: 'id', ele: '@id'},
           {record: 'description', ele: 'description'},
-          {record: 'location', ele: 'url:project'},
+          {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
+        workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-',
         checkField: 'name_with_namespace',
         checkBranch: 'master',
         linkModalTitle: 'Workspace Linking',
@@ -94,12 +95,13 @@ module.exports = {
       definition: {
         name: 'CreateWorkspace',
         recordMap: [
-          {record: 'title', ele: 'title'},
-          {record: 'id', ele: '@id'},
+          {record: 'title', ele: 'name'},
+          {record: 'id', ele: 'id'},
           {record: 'description', ele: 'description'},
-          {record: 'location', ele: 'url:project'},
+          {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
+        workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-',
         branch: 'master',
         createLabel: 'Create',
         dismissLabel: 'Ok',

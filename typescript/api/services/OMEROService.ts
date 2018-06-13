@@ -34,7 +34,7 @@ export module Services {
       const keyvalue = key + '=' + value;
       const cookie = requestPromise.cookie('' + keyvalue);
       jar.setCookie(cookie, config.host, function(error, cookie) {
-        sails.log.debug(cookie);
+        //sails.log.debug(cookie);
       });
       return jar;
     }
@@ -64,7 +64,6 @@ export module Services {
     }
 
     login(config: any, csrf: string, user: any) {
-      sails.log.debug('login');
       let jar = requestPromise.jar();
       jar = this.cookieJar(jar, config, 'csrftoken', csrf);
       const post = requestPromise({

@@ -35,7 +35,6 @@ var Services;
             var keyvalue = key + '=' + value;
             var cookie = requestPromise.cookie('' + keyvalue);
             jar.setCookie(cookie, config.host, function (error, cookie) {
-                sails.log.debug(cookie);
             });
             return jar;
         };
@@ -62,7 +61,6 @@ var Services;
             return Rx_1.Observable.fromPromise(get);
         };
         OMEROService.prototype.login = function (config, csrf, user) {
-            sails.log.debug('login');
             var jar = requestPromise.jar();
             jar = this.cookieJar(jar, config, 'csrftoken', csrf);
             var post = requestPromise({

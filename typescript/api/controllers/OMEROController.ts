@@ -49,7 +49,6 @@ export module Controllers {
         OMEROService.csrf(this.config)
           .flatMap(response => {
             csrf = JSON.parse(response);
-            sails.log.debug(csrf.data);
             return OMEROService.login(this.config, csrf.data, user);
           })
           .flatMap(response => {
@@ -75,7 +74,6 @@ export module Controllers {
             }
           })
           .subscribe(response => {
-            sails.log.debug('login');
             const data = {status: true, login: true};
             this.ajaxOk(req, res, null, data);
           }, error => {
@@ -159,17 +157,20 @@ export module Controllers {
         const rdmp = req.param('rdmp');
         const recordMap = req.param('recordMap');
 
-        let annId = null;//
-        let mapAnnotation = [];//
+        let annId = null;
+        let mapAnnotation = [];
 
+        sails.log.debug(project);
         let record = WorkspaceService.mapToRecord(project, recordMap);
         record = _.merge(record, {type: this.config.recordType});
+        sails.log.debug(record);
         sails.log.debug('OMERO::LINK::');
         sails.log.debug(record.id);
         let app = {};
         let annotations = [];
         let rowAnnotation;
         let idAnnotation;
+        let workspaceId;
 
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
@@ -189,7 +190,26 @@ export module Controllers {
               return this.createAnnotation({
                 app, record, rowAnnotation, idAnnotation, annotations, username, rdmp
               });
-            } else return Observable.of('');
+            } else return Observable.of({body: ann});
+          }).flatMap(response => {
+            sails.log.debug('mapAnnotation');
+            sails.log.debug(response.body);
+            return WorkspaceService.createWorkspaceRecord(this.config, username, record, this.config.recordType, this.config.workflowStage);
+          })
+          .flatMap(response => {
+            workspaceId = response.oid;
+            sails.log.debug('addParentRecordLink');
+            return WorkspaceService.getRecordMeta(this.config, rdmp);
+          })
+          .flatMap(recordMetadata => {
+            sails.log.debug('recordMetadata');
+            if(recordMetadata && recordMetadata.workspaces) {
+              const wss = recordMetadata.workspaces.find(id => workspaceId === id);
+              if(!wss) {
+                recordMetadata.workspaces.push({id: workspaceId});
+              }
+            }
+            return WorkspaceService.updateRecordMeta(this.config, recordMetadata, rdmp);
           }).subscribe(response => {
             sails.log.debug('linkWorkspace');
             const data = {status: true, response};
@@ -286,7 +306,7 @@ export module Controllers {
       this.redboxHeaders = {
         'Cache-Control': 'no-cache',
         'Content-Type': 'application/json',
-        'Authorization': '',
+        'Authorization': workspaceConfig.portal.authorization,
       };
 
     }

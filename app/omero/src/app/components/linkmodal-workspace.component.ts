@@ -34,6 +34,7 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
   closeLabel: string;
   processing: boolean;
   processingStatus: string; //Control status code {'done','async','start'}
+  workspaceLink: string;
 
   omeroService: OMEROService;
   currentWorkspace: CurrentWorkspace;
@@ -63,6 +64,7 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
     this.workspaceDefinition = options['workspaceDefinition'] || [];
     this.checkField = options['checkField'] || '';
     this.recordMap = options['recordMap'] || [];
+    this.workspaceLink = options['workspaceLink'] || '';
   }
 
   registerEvents() {
@@ -95,6 +97,7 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
 
   linkModal({rdmp, workspace}) {
     this.currentWorkspace = workspace;
+    this.currentWorkspace.location = this.workspaceLink + workspace['@id'];
     this.checks.clear();
     jQuery('#linkModal').modal('show');
     this.processing = true;

@@ -45,7 +45,6 @@ var Controllers;
                 OMEROService.csrf(this.config)
                     .flatMap(function (response) {
                     csrf_1 = JSON.parse(response);
-                    sails.log.debug(csrf_1.data);
                     return OMEROService.login(_this.config, csrf_1.data, user_1);
                 })
                     .flatMap(function (response) {
@@ -72,7 +71,6 @@ var Controllers;
                     }
                 })
                     .subscribe(function (response) {
-                    sails.log.debug('login');
                     var data = { status: true, login: true };
                     _this.ajaxOk(req, res, null, data);
                 }, function (error) {
@@ -161,14 +159,17 @@ var Controllers;
                 var recordMap = req.param('recordMap');
                 var annId = null;
                 var mapAnnotation_1 = [];
+                sails.log.debug(project);
                 var record_1 = WorkspaceService.mapToRecord(project, recordMap);
                 record_1 = _.merge(record_1, { type: this.config.recordType });
+                sails.log.debug(record_1);
                 sails.log.debug('OMERO::LINK::');
                 sails.log.debug(record_1.id);
                 var app_1 = {};
                 var annotations_1 = [];
                 var rowAnnotation_1;
                 var idAnnotation_1;
+                var workspaceId_1;
                 return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
                     .flatMap(function (response) {
                     sails.log.debug('userInfo');
@@ -188,7 +189,26 @@ var Controllers;
                         });
                     }
                     else
-                        return Rx_1.Observable.of('');
+                        return Rx_1.Observable.of({ body: ann });
+                }).flatMap(function (response) {
+                    sails.log.debug('mapAnnotation');
+                    sails.log.debug(response.body);
+                    return WorkspaceService.createWorkspaceRecord(_this.config, username_1, record_1, _this.config.recordType, _this.config.workflowStage);
+                })
+                    .flatMap(function (response) {
+                    workspaceId_1 = response.oid;
+                    sails.log.debug('addParentRecordLink');
+                    return WorkspaceService.getRecordMeta(_this.config, rdmp_1);
+                })
+                    .flatMap(function (recordMetadata) {
+                    sails.log.debug('recordMetadata');
+                    if (recordMetadata && recordMetadata.workspaces) {
+                        var wss = recordMetadata.workspaces.find(function (id) { return workspaceId_1 === id; });
+                        if (!wss) {
+                            recordMetadata.workspaces.push({ id: workspaceId_1 });
+                        }
+                    }
+                    return WorkspaceService.updateRecordMeta(_this.config, recordMetadata, rdmp_1);
                 }).subscribe(function (response) {
                     sails.log.debug('linkWorkspace');
                     var data = { status: true, response: response };
@@ -265,7 +285,7 @@ var Controllers;
             this.redboxHeaders = {
                 'Cache-Control': 'no-cache',
                 'Content-Type': 'application/json',
-                'Authorization': '',
+                'Authorization': workspaceConfig.portal.authorization,
             };
         };
         return Config;
