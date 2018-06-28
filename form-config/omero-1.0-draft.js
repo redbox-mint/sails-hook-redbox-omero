@@ -70,7 +70,7 @@ module.exports = {
         ],
         recordMap: [
           {record: 'title', ele: 'Name'},
-          {record: 'id', ele: '@id'},
+          {record: 'omeroId', ele: '@id'},
           {record: 'description', ele: 'description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
@@ -96,7 +96,7 @@ module.exports = {
         name: 'CreateWorkspace',
         recordMap: [
           {record: 'title', ele: 'name'},
-          {record: 'id', ele: 'id'},
+          {record: 'omeroId', ele: 'id'},
           {record: 'description', ele: 'description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}

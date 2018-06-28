@@ -23,7 +23,8 @@ var Controllers;
                 'login',
                 'projects',
                 'create',
-                'link'
+                'link',
+                'checkLink'
             ];
             _this.config = new Config();
             return _this;
@@ -220,6 +221,53 @@ var Controllers;
                 });
             }
         };
+        OMEROController.prototype.checkLink = function (req, res) {
+            var _this = this;
+            this.config.set();
+            if (!req.isAuthenticated()) {
+                this.ajaxFail(req, res, "User not authenticated");
+            }
+            else {
+                var rdmpId_1 = req.params('rdmpId');
+                var omeroId_1 = req.params('omeroId');
+                var app = {};
+                var info_2 = {};
+                var check_1 = {
+                    ws: false,
+                    omero: false
+                };
+                var annotations_2 = [];
+                var mapAnnotation_2 = [];
+                return OMEROService.annotations({
+                    config: this.config, app: app, id: omeroId_1
+                }).flatMap(function (response) {
+                    sails.log.debug('annotations');
+                    annotations_2 = (JSON.parse(response)).annotations;
+                    mapAnnotation_2 = annotations_2;
+                    var ann = _.first(_this.findAnnotation('stash', mapAnnotation_2));
+                    sails.log.debug(ann);
+                    info_2 = _this.workspaceInfoFromRepo(ann);
+                    return WorkspaceService.getRecordMeta(_this.config, rdmpId_1);
+                }).subscribe(function (recordMetadata) {
+                    if (recordMetadata && recordMetadata.workspaces) {
+                        var wss = recordMetadata.workspaces.find(function (id) { return info_2['workspaceId'] === id; });
+                        if (!wss) {
+                            check_1.ws = true;
+                        }
+                        else {
+                            if (recordMetadata.omeroId === info_2['omeroId']) {
+                                check_1.omero = true;
+                            }
+                        }
+                    }
+                    _this.ajaxOk(req, res, null, { status: true, check: check_1 });
+                }, function (error) {
+                    var errorMessage = "Failed compare link workspace project: " + omeroId_1;
+                    sails.log.error(errorMessage);
+                    _this.ajaxFail(req, res, errorMessage, error);
+                });
+            }
+        };
         OMEROController.prototype.createAnnotation = function (_a) {
             var _this = this;
             var app = _a.app, record = _a.record, rowAnnotation = _a.rowAnnotation, idAnnotation = _a.idAnnotation, annotations = _a.annotations, username = _a.username, rdmp = _a.rdmp;
@@ -261,6 +309,15 @@ var Controllers;
             }).filter(function (cur) {
                 return cur.row != null;
             });
+        };
+        OMEROController.prototype.workspaceInfoFromRepo = function (workspaceLink) {
+            if (workspaceLink) {
+                var workspaceInfo = workspaceLink.split('.');
+                return { rdmpId: _.first(workspaceInfo), workspaceId: _.last(workspaceInfo) };
+            }
+            else {
+                return { rdmpId: null, workspaceId: null };
+            }
         };
         return OMEROController;
     }(controller.Controllers.Core.Controller));

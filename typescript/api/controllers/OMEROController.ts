@@ -23,7 +23,8 @@ export module Controllers {
       'login',
       'projects',
       'create',
-      'link'
+      'link',
+      'checkLink'
     ];
     _config: any;
 
@@ -94,7 +95,7 @@ export module Controllers {
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
             sails.log.debug('userInfo');
-            if(response.info) {
+            if (response.info) {
               const app = response.info;
               return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid);
             } else {
@@ -203,9 +204,9 @@ export module Controllers {
           })
           .flatMap(recordMetadata => {
             sails.log.debug('recordMetadata');
-            if(recordMetadata && recordMetadata.workspaces) {
+            if (recordMetadata && recordMetadata.workspaces) {
               const wss = recordMetadata.workspaces.find(id => workspaceId === id);
-              if(!wss) {
+              if (!wss) {
                 recordMetadata.workspaces.push({id: workspaceId});
               }
             }
@@ -219,6 +220,54 @@ export module Controllers {
             sails.log.error(errorMessage);
             this.ajaxFail(req, res, errorMessage, error);
           });
+      }
+    }
+
+    checkLink(req, res) {
+      this.config.set();
+      if (!req.isAuthenticated()) {
+        this.ajaxFail(req, res, `User not authenticated`);
+      } else {
+        const rdmpId = req.params('rdmpId');
+        const omeroId = req.params('omeroId');
+        let app = {};
+        let info = {};
+        let check = {
+          ws: false,
+          omero: false
+        };
+        let annotations = [];
+        let mapAnnotation = [];
+
+        return OMEROService.annotations({
+          config: this.config, app: app, id: omeroId
+        }).flatMap(response => {
+          sails.log.debug('annotations');
+          annotations = (JSON.parse(response)).annotations;
+          mapAnnotation = annotations;
+          //Check whether there is a workspace created
+          const ann = _.first(this.findAnnotation('stash', mapAnnotation));
+          sails.log.debug(ann);
+          //e0582136e22f13059f5d36769282403d.75a2c64ca8c7ad77e9a68adc11e2015b
+          info = this.workspaceInfoFromRepo(ann);
+          return WorkspaceService.getRecordMeta(this.config, rdmpId)
+        }).subscribe(recordMetadata => {
+          if (recordMetadata && recordMetadata.workspaces) {
+            const wss = recordMetadata.workspaces.find(id => info['workspaceId'] === id);
+            if (!wss) {
+              check.ws = true;
+            } else {
+              if (recordMetadata.omeroId === info['omeroId']) {
+                check.omero = true;
+              }
+            }
+          }
+          this.ajaxOk(req, res, null, {status: true, check: check});
+        }, error => {
+          const errorMessage = `Failed compare link workspace project: ${omeroId}`;
+          sails.log.error(errorMessage);
+          this.ajaxFail(req, res, errorMessage, error);
+        });
       }
     }
 
@@ -270,6 +319,15 @@ export module Controllers {
       }).filter((cur) => {
         return cur.row != null;
       });
+    }
+
+    workspaceInfoFromRepo(workspaceLink) {
+      if(workspaceLink) {
+        const workspaceInfo = workspaceLink.split('.');
+        return {rdmpId: _.first(workspaceInfo), workspaceId: _.last(workspaceInfo)};
+      } else{
+        return {rdmpId: null, workspaceId: null};
+      }
     }
 
   }
