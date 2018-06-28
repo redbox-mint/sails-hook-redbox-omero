@@ -1,13 +1,6 @@
 # See http://help.omero.com/ignore-files/ for more about ignoring files.
 
-# compiled output
-/dist
-/dist-server
-/tmp
-/out-tsc
-
-# dependencies
-node_modules
+redbox-portal
 
 # IDEs and editors
 .idea
@@ -44,6 +37,3 @@ e2e/*.map
 Thumbs.db
 
 test/angular
-
-redbox-portal
-app/gitlab/dist
