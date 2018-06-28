@@ -1,6 +1,7 @@
 # See http://help.omero.com/ignore-files/ for more about ignoring files.
 
 redbox-portal
+node_modules
 
 # IDEs and editors
 .idea
