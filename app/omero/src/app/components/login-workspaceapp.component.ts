@@ -1,5 +1,5 @@
 import {Output, EventEmitter, Component, OnInit, Inject, Injector} from '@angular/core';
-import {FormGroup, FormControl, Validators} from '@angular/forms';
+import {FormGroup, FormControl, Validators, NgForm} from '@angular/forms';
 import {SimpleComponent} from '../shared/form/field-simple.component';
 import {FieldBase} from '../shared/form/field-base';
 import * as _ from "lodash-es";
@@ -35,6 +35,7 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
   allowLabel: string;
   closeLabel: string;
   cannotLoginMessage: string;
+  loading: boolean;
 
   omeroService: OMEROService;
   @Output() listWorkspaces: EventEmitter<any> = new EventEmitter<any>();
@@ -94,18 +95,24 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
     return this.value;
   }
 
-  validate(value: any) {
-    if (value.username && value.password) {
+  validate(form: any) {
+    if (form.username && form.password) {
       jQuery('#loginPermissionModal').modal('show');
     } else {
       this.loginError = true;
     }
   }
 
-  allow(value: any) {
-    //this.loginSubmitted.emit(value);
+  allow(form: any) {
+    //this.loginSubmitted.emit(userForm);
     jQuery('#loginPermissionModal').modal('hide');
-    this.omeroService.session(value).then((response: any) => {
+    const formValues = {
+      username: form.username,
+      password: form.password
+    };
+    this.loading = true;
+    this.omeroService.session(formValues).then((response: any) => {
+      this.loading = false;
       if (!response.status) {
         if (!response.message) {
           this.displayLoginMessage({error: true, value: this.cannotLoginMessage});
@@ -135,7 +142,10 @@ export class LoginWorkspaceAppField extends FieldBase<any> {
 @Component({
   selector: 'ws-login',
   template: `
-    <div *ngIf="!field.loggedIn && field.isLoaded" class="padding-bottom-10">
+    <div *ngIf="field.loading" class="">
+      <img class="center-block" src="/images/loading.svg">
+    </div>
+    <div *ngIf="!field.loggedIn && field.isLoaded && !field.loading" class="padding-bottom-10">
       <div class="">
         <h4>{{ field.permissionStep }}</h4>
         <form #form="ngForm" novalidate autocomplete="off">
