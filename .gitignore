@@ -2,7 +2,6 @@
 
 redbox-portal
 node_modules
-app/omero/dist
 
 # IDEs and editors
 .idea
