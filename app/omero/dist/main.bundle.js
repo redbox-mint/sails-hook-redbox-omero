@@ -7141,7 +7141,7 @@ module.exports = "<div *ngIf=\"field.loggedIn\" class='padding-bottom-10'>\n  <d
 /***/ "./src/app/components/field-listworkspaces.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"field.loggedIn\" class=\"padding-bottom-10\">\n  <div class=\"\">\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <ng-container *ngFor=\"let header of field.columns\"><th>{{ header.label }}</th></ng-container>\n          <th>{{ field.rdmpLinkLabel }}</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr *ngFor=\"let item of field.workspaces\">\n          <ng-container *ngFor=\"let column of field.columns\">\n          <td *ngIf=\"column.show != false\">\n            <span *ngIf=\"column.link; else noProcessing \"><a target=\"_blank\" class=\"{{column.classes || ''}}\" rel=\"noopener noreferrer\" href=\"{{ field.workspaceLink + item[column.property] }}\">{{ column.label || ''}}</a></span>\n            <ng-template #multivalue></ng-template>\n            <ng-template #noProcessing><span >{{ item[column.property] }}</span></ng-template>\n          </td>\n          </ng-container>\n          <td>\n            <span *ngIf=\"item.rdmp && item.rdmp.info && item.rdmp.info.rdmp; else isNotLinked \">\n              <button disabled type=\"button\" class=\"btn btn-success btn-block\" *ngIf=\"item.rdmp.info.rdmp === field.rdmp\"> Linked </button>\n              <button disabled type=\"button\" class=\"btn btn-info btn-block\" *ngIf=\"item.rdmp.info.rdmp != field.rdmp\"> Linked to another RDMP</button>\n            </span>\n            <ng-template #isNotLinked>\n              <button type=\"button\" class=\"btn btn-info btn-block\" (click)=\"field.linkWorkspace(item)\"> Link </button>\n            </ng-template>\n          </td>\n        </tr>\n      </tbody>\n    </table>\n    <div *ngIf=\"field.loading\" class=\"\">\n      <img class=\"center-block\" src=\"/images/loading.svg\">\n    </div>\n    <p *ngIf=\"field.failedObjects.length > 0\">There were {{ field.failedObjects.length }} records that failed to load</p>\n    <p *ngIf=\"field.accessDeniedObjects.length > 0\">There were {{ field.accessDeniedObjects.length }} records that you do not have access to</p>\n  </div>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-default\" (click)=\"field.listWorkspaces()\"><i class=\"fa fa-refresh\"></i>&nbsp;{{ field.syncLabel }}</button>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"field.loggedIn\" class=\"padding-bottom-10\">\n  <div class=\"\">\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <ng-container *ngFor=\"let header of field.columns\"><th>{{ header.label }}</th></ng-container>\n          <th>{{ field.rdmpLinkLabel }}</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr *ngFor=\"let item of field.workspaces\">\n          <ng-container *ngFor=\"let column of field.columns\">\n          <td *ngIf=\"column.show != false\">\n            <span *ngIf=\"column.link; else noProcessing\"><a target=\"_blank\" class=\"{{column.classes || ''}}\" rel=\"noopener noreferrer\" href=\"{{ field.workspaceLink + item[column.property] }}\">{{ column.label || ''}}</a></span>\n            <ng-template #multivalue></ng-template>\n            <ng-template #noProcessing><span >{{ item[column.property] }}</span></ng-template>\n          </td>\n          </ng-container>\n          <td>\n            <span *ngIf=\"!item['linkedState']\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\"><span><i class=\"fa fa-spinner fa-spin\"></i></span></button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'linked'\">\n              <button type=\"button\" disabled class=\"btn btn-success btn-block\" [name]=\"item['@id']\">{{ field.linkedLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'another'\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\">{{ field.linkedAnotherLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'link'\">\n              <button type=\"button\" class=\"btn btn-info btn-block\" [name]=\"item['@id']\" (click)=\"field.linkWorkspace(item)\">{{ field.linkLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'problem'\">\n              <button type=\"button\" disabled class=\"btn btn-warning btn-block\" [name]=\"item['@id']\" >{{ field.linkProblem }}</button>\n            </span>\n          </td>\n        </tr>\n      </tbody>\n    </table>\n    <div *ngIf=\"field.loading\" class=\"\">\n      <img class=\"center-block\" src=\"/images/loading.svg\">\n    </div>\n    <p *ngIf=\"field.failedObjects.length > 0\">There were {{ field.failedObjects.length }} records that failed to load</p>\n    <p *ngIf=\"field.accessDeniedObjects.length > 0\">There were {{ field.accessDeniedObjects.length }} records that you do not have access to</p>\n  </div>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-default\" (click)=\"field.listWorkspaces()\"><i class=\"fa fa-refresh\"></i>&nbsp;{{ field.syncLabel }}</button>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -7346,6 +7346,10 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         _this.accessDeniedObjects = [];
         _this.loading = true;
         _this.workspaceLink = options['workspaceLink'];
+        _this.linkedLabel = options['linkedLabel'] || 'linked';
+        _this.linkedAnotherLabel = options['linkedAnotherLabel'] || 'Linked to another workspace';
+        _this.linkLabel = options['linkLabel'] || 'Link Workspace';
+        _this.linkProblem = options['linkProblem'] || 'There was a problem checking the link';
         return _this;
     }
     ListWorkspaceDataField.prototype.registerEvents = function () {
@@ -7394,6 +7398,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
                 _this.loggedIn = _this.fieldMap._rootComp.loggedIn = true;
                 _this.workspaces = response.projects.data;
                 _this.checkLoggedIn.emit(true);
+                _this.checkLinks();
             }
         })
             .catch(function (error) {
@@ -7404,6 +7409,31 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
     };
     ListWorkspaceDataField.prototype.linkWorkspace = function (item) {
         this.linkModal.emit({ rdmp: this.fieldMap._rootComp.rdmp, workspace: item });
+    };
+    ListWorkspaceDataField.prototype.checkLinks = function () {
+        var _this = this;
+        //this.workspaces[index]['linkedState'] == 'check'; // Possible values: linked, another, link
+        this.workspaces.map(function (w, index) {
+            _this.omeroService.checkLink({ rdmpId: _this.rdmp, omeroId: w['@id'] })
+                .then(function (response) {
+                var check = response.check;
+                if (check) {
+                    if (check.ws && check.omero) {
+                        _this.workspaces[index]['linkedState'] = 'linked';
+                    }
+                    else {
+                        _this.workspaces[index]['linkedState'] = 'link';
+                    }
+                }
+                else {
+                    _this.workspaces[index]['linkedState'] = 'another';
+                }
+            })
+                .catch(function (error) {
+                console.log(error);
+                _this.workspaces[index]['linkedState'] = 'problem';
+            });
+        });
     };
     __decorate([
         core_1.Output(),
@@ -7421,8 +7451,8 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
 }(field_base_1.FieldBase));
 exports.ListWorkspaceDataField = ListWorkspaceDataField;
 /**
-* Component to display information from related objects within ReDBox
-*/
+ * Component to display information from related objects within ReDBox
+ */
 var ListWorkspaceDataComponent = /** @class */ (function (_super) {
     __extends(ListWorkspaceDataComponent, _super);
     function ListWorkspaceDataComponent() {

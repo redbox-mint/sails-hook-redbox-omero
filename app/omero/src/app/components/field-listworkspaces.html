@@ -11,19 +11,27 @@
         <tr *ngFor="let item of field.workspaces">
           <ng-container *ngFor="let column of field.columns">
           <td *ngIf="column.show != false">
-            <span *ngIf="column.link; else noProcessing "><a target="_blank" class="{{column.classes || ''}}" rel="noopener noreferrer" href="{{ field.workspaceLink + item[column.property] }}">{{ column.label || ''}}</a></span>
+            <span *ngIf="column.link; else noProcessing"><a target="_blank" class="{{column.classes || ''}}" rel="noopener noreferrer" href="{{ field.workspaceLink + item[column.property] }}">{{ column.label || ''}}</a></span>
             <ng-template #multivalue></ng-template>
             <ng-template #noProcessing><span >{{ item[column.property] }}</span></ng-template>
           </td>
           </ng-container>
           <td>
-            <span *ngIf="item.rdmp && item.rdmp.info && item.rdmp.info.rdmp; else isNotLinked ">
-              <button disabled type="button" class="btn btn-success btn-block" *ngIf="item.rdmp.info.rdmp === field.rdmp"> Linked </button>
-              <button disabled type="button" class="btn btn-info btn-block" *ngIf="item.rdmp.info.rdmp != field.rdmp"> Linked to another RDMP</button>
+            <span *ngIf="!item['linkedState']">
+              <button type="button" disabled class="btn btn-info btn-block" [name]="item['@id']"><span><i class="fa fa-spinner fa-spin"></i></span></button>
             </span>
-            <ng-template #isNotLinked>
-              <button type="button" class="btn btn-info btn-block" (click)="field.linkWorkspace(item)"> Link </button>
-            </ng-template>
+            <span *ngIf="item['linkedState'] === 'linked'">
+              <button type="button" disabled class="btn btn-success btn-block" [name]="item['@id']">{{ field.linkedLabel }}</button>
+            </span>
+            <span *ngIf="item['linkedState'] === 'another'">
+              <button type="button" disabled class="btn btn-info btn-block" [name]="item['@id']">{{ field.linkedAnotherLabel }}</button>
+            </span>
+            <span *ngIf="item['linkedState'] === 'link'">
+              <button type="button" class="btn btn-info btn-block" [name]="item['@id']" (click)="field.linkWorkspace(item)">{{ field.linkLabel }}</button>
+            </span>
+            <span *ngIf="item['linkedState'] === 'problem'">
+              <button type="button" disabled class="btn btn-warning btn-block" [name]="item['@id']" >{{ field.linkProblem }}</button>
+            </span>
           </td>
         </tr>
       </tbody>

@@ -1,10 +1,10 @@
-import { Input, Output, Component, OnInit, Inject, Injector, EventEmitter} from '@angular/core';
-import { SimpleComponent } from '../shared/form/field-simple.component';
-import { FieldBase } from '../shared/form/field-base';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import {Input, Output, Component, OnInit, Inject, Injector, EventEmitter} from '@angular/core';
+import {SimpleComponent} from '../shared/form/field-simple.component';
+import {FieldBase} from '../shared/form/field-base';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
 import * as _ from "lodash-es";
 
-import { OMEROService } from '../omero.service';
+import {OMEROService} from '../omero.service';
 
 /**
  * Contributor Model
@@ -32,6 +32,11 @@ export class ListWorkspaceDataField extends FieldBase<any> {
   omeroService: OMEROService;
   rdmp: string;
   workspaceLink: string;
+  linkedState: string;
+  linkedLabel: string;
+  linkedAnotherLabel: string;
+  linkLabel: string;
+  linkProblem: string;
 
   @Output() checkLoggedIn: EventEmitter<any> = new EventEmitter<any>();
   @Output() linkModal: EventEmitter<any> = new EventEmitter<any>();
@@ -53,6 +58,10 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.accessDeniedObjects = [];
     this.loading = true;
     this.workspaceLink = options['workspaceLink'];
+    this.linkedLabel = options['linkedLabel'] || 'linked';
+    this.linkedAnotherLabel = options['linkedAnotherLabel'] || 'Linked to another workspace';
+    this.linkLabel = options['linkLabel'] || 'Link Workspace';
+    this.linkProblem = options['linkProblem'] || 'There was a problem checking the link';
   }
 
   registerEvents() {
@@ -62,7 +71,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     // this.fieldMap['RevokeLogin'].field['revokePermissions'].subscribe(this.revoke.bind(this));
   }
 
-  init(){
+  init() {
     this.rdmp = this.fieldMap._rootComp.rdmp;
   }
 
@@ -75,17 +84,17 @@ export class ListWorkspaceDataField extends FieldBase<any> {
       this.value = valueElem;
     }
 
-      this.formModel = new FormControl(this.value || []);
+    this.formModel = new FormControl(this.value || []);
 
-      if (this.value) {
-        this.setValue(this.value);
-      }
+    if (this.value) {
+      this.setValue(this.value);
+    }
 
     return this.formModel;
   }
 
-  setValue(value:any) {
-    this.formModel.patchValue(value, {emitEvent: false });
+  setValue(value: any) {
+    this.formModel.patchValue(value, {emitEvent: false});
     this.formModel.markAsTouched();
   }
 
@@ -98,33 +107,57 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.loading = true;
     this.workspaces = [];
     return this.omeroService.projects()
-    .then(response => {
-      this.loading = false;
-      if(!response.status) {
+      .then(response => {
+        this.loading = false;
+        if (!response.status) {
+          this.loggedIn = this.fieldMap._rootComp.loggedIn = false;
+          this.checkLoggedIn.emit(false);
+        } else {
+          this.loggedIn = this.fieldMap._rootComp.loggedIn = true;
+          this.workspaces = response.projects.data;
+          this.checkLoggedIn.emit(true);
+          this.checkLinks();
+        }
+      })
+      .catch(error => {
+        this.loading = false;
         this.loggedIn = this.fieldMap._rootComp.loggedIn = false;
         this.checkLoggedIn.emit(false);
-      } else {
-        this.loggedIn = this.fieldMap._rootComp.loggedIn = true;
-        this.workspaces = response.projects.data;
-        this.checkLoggedIn.emit(true);
-      }
-    })
-    .catch(error => {
-      this.loading = false;
-      this.loggedIn = this.fieldMap._rootComp.loggedIn = false;
-      this.checkLoggedIn.emit(false);
-    });
+      });
   }
 
   linkWorkspace(item) {
     this.linkModal.emit({rdmp: this.fieldMap._rootComp.rdmp, workspace: item});
   }
 
+  checkLinks() {
+    //this.workspaces[index]['linkedState'] == 'check'; // Possible values: linked, another, link
+    this.workspaces.map((w, index) => {
+      this.omeroService.checkLink({rdmpId: this.rdmp, omeroId: w['@id']})
+        .then((response) => {
+          const check = response.check;
+          if (check) {
+            if (check.ws && check.omero) {
+              this.workspaces[index]['linkedState'] = 'linked';
+            } else {
+              this.workspaces[index]['linkedState'] = 'link';
+            }
+          } else {
+            this.workspaces[index]['linkedState'] = 'another';
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          this.workspaces[index]['linkedState'] = 'problem';
+        });
+    });
+  }
+
 }
 
 /**
-* Component to display information from related objects within ReDBox
-*/
+ * Component to display information from related objects within ReDBox
+ */
 @Component({
   selector: 'ws-listworkspaces',
   templateUrl: './field-listworkspaces.html'
