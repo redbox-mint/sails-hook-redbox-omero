@@ -145,13 +145,17 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.workspaces.map((w, index) => {
       this.omeroService.checkLink({rdmpId: this.rdmp, omeroId: w['@id']})
         .then((response) => {
-          const check = response.check;
-          if (check && check.omero) {
-            this.workspaces[index]['linkedState'] = 'linked';
-          } else if (check && check.ws) {
-            this.workspaces[index]['linkedState'] = 'another';
+          if (!response.status) {
+            throw new Error('Error checking workspace');
           } else {
-            this.workspaces[index]['linkedState'] = 'link';
+            const check = response.check;
+            if (check && check.omero) {
+              this.workspaces[index]['linkedState'] = 'linked';
+            } else if (check && check.ws) {
+              this.workspaces[index]['linkedState'] = 'another';
+            } else {
+              this.workspaces[index]['linkedState'] = 'link';
+            }
           }
         })
         .catch((error) => {
@@ -165,7 +169,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.limit = this.workspacesMeta.limit;
     this.offset = this.workspacesMeta.offset;
     const currentOffset = event.page * this.limit;
-    console.log(currentOffset)
+    console.log(this.limit)
     if (this.currentPage > event.page) {
       if (currentOffset <= this.limit) {
         this.offset = 0;
@@ -175,7 +179,6 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     } else {
       this.offset = currentOffset;
     }
-
     console.log(this.offset);
     this.listWorkspaces();
   }

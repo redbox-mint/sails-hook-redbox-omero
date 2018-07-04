@@ -7422,15 +7422,20 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         this.workspaces.map(function (w, index) {
             _this.omeroService.checkLink({ rdmpId: _this.rdmp, omeroId: w['@id'] })
                 .then(function (response) {
-                var check = response.check;
-                if (check && check.omero) {
-                    _this.workspaces[index]['linkedState'] = 'linked';
-                }
-                else if (check && check.ws) {
-                    _this.workspaces[index]['linkedState'] = 'another';
+                if (!response.status) {
+                    throw new Error('Error checking workspace');
                 }
                 else {
-                    _this.workspaces[index]['linkedState'] = 'link';
+                    var check = response.check;
+                    if (check && check.omero) {
+                        _this.workspaces[index]['linkedState'] = 'linked';
+                    }
+                    else if (check && check.ws) {
+                        _this.workspaces[index]['linkedState'] = 'another';
+                    }
+                    else {
+                        _this.workspaces[index]['linkedState'] = 'link';
+                    }
                 }
             })
                 .catch(function (error) {
@@ -7443,7 +7448,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         this.limit = this.workspacesMeta.limit;
         this.offset = this.workspacesMeta.offset;
         var currentOffset = event.page * this.limit;
-        console.log(currentOffset);
+        console.log(this.limit);
         if (this.currentPage > event.page) {
             if (currentOffset <= this.limit) {
                 this.offset = 0;
