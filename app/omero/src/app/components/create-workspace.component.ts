@@ -1,21 +1,21 @@
-import { Input, Output, Component, OnInit, Inject, Injector, ElementRef, ViewChild, EventEmitter } from '@angular/core';
-import { SimpleComponent } from '../shared/form/field-simple.component';
-import { FieldBase } from '../shared/form/field-base';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import {Input, Output, Component, OnInit, Inject, Injector, ElementRef, ViewChild, EventEmitter} from '@angular/core';
+import {SimpleComponent} from '../shared/form/field-simple.component';
+import {FieldBase} from '../shared/form/field-base';
+import {FormGroup, FormControl, Validators} from '@angular/forms';
 import * as _ from "lodash-es";
 
-import { OMEROService } from '../omero.service';
-import { Creation, CreationAlert, Checks, CurrentWorkspace, WorkspaceUser } from './shared';
+import {OMEROService} from '../omero.service';
+import {Creation, CreationAlert, Checks, CurrentWorkspace, WorkspaceUser} from './shared';
 
 // STEST-22
 declare var jQuery: any;
 
 /**
-* Contributor Model
-*
-* @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
-*
-*/
+ * Contributor Model
+ *
+ * @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
+ *
+ */
 export class CreateWorkspaceField extends FieldBase<any> {
 
   showHeader: boolean;
@@ -109,8 +109,8 @@ export class CreateWorkspaceField extends FieldBase<any> {
     return this.formModel;
   }
 
-  setValue(value:any) {
-    this.formModel.patchValue(value, {emitEvent: false });
+  setValue(value: any) {
+    this.formModel.patchValue(value, {emitEvent: false});
     this.formModel.markAsTouched();
   }
 
@@ -124,26 +124,26 @@ export class CreateWorkspaceField extends FieldBase<any> {
     this.creation.clear();
     this.creationAlert.clear();
     console.log('clear');
-    jQuery('#createModal').modal({show: true, keyboard: false});
+    jQuery('#createModal').modal({show: true, keyboard: false, backdrop: 'static'});
   }
 
   create() {
     this.validations = this.validateWorkspace();
     this.creationAlert.clear();
-    if(this.validations.length <= 0) {
-        this.createWorkspace();
+    if (this.validations.length <= 0) {
+      this.createWorkspace();
     }
   }
 
   validateWorkspace() {
     const validateWorkspace = [];
-    if(!this.creation.name) {
+    if (!this.creation.name) {
       validateWorkspace.push({message: this.nameWorkspaceValidation});
     }
-    if(this.creation.nameHasSpaces()) {
+    if (this.creation.nameHasSpaces()) {
       validateWorkspace.push({message: this.nameHasSpacesValidation});
     }
-    if(!this.creation.description) {
+    if (!this.creation.description) {
       validateWorkspace.push({message: this.descriptionWorkspaceValidation});
     }
     return validateWorkspace;
@@ -151,37 +151,37 @@ export class CreateWorkspaceField extends FieldBase<any> {
 
   createWorkspace() {
     this.creationAlert.set({message: this.creatingWorkspace, status: 'working', className: 'warning'});
-
     this.omeroService.createWorkspace(this.creation)
-    .then(response => {
-      if(!response.status) {
-        //TODO: improve this assignment in case of error.
-        throw new Error('Error creating workspace');
-      } else {
-        this.creationAlert.set({message: this.linkingWorkspace, status: 'linking', className: 'warning'});
-        this.creation.id = response.create['id'];
-        this.creation.location = this.workspaceLink + this.creation.id;
-        return this.omeroService.link({
-          rdmp: this.rdmp, project: this.creation, recordMap: this.recordMap
-        })
-      }
-    }).then(response => {
-      if(!response.status) {
+      .then(response => {
+        if (!response.status) {
+          //TODO: improve this assignment in case of error.
+          throw new Error('Error creating workspace');
+        } else {
+          this.creationAlert.set({message: this.linkingWorkspace, status: 'working', className: 'warning'});
+          this.creation.id = response.create['@id'];
+          this.creation.description = response.create['Description'];
+          this.creation.location = this.workspaceLink + this.creation.id;
+          return this.omeroService.link({
+            rdmp: this.rdmp, project: this.creation, recordMap: this.recordMap
+          })
+        }
+      }).then(response => {
+      if (!response.status) {
         throw new Error(response.message.description);
       }
       this.creationAlert.set({message: this.workspaceCreated, status: 'done', className: 'success'});
       this.listWorkspaces.emit();
     })
-    .catch(error => {
-      this.creationAlert.set({message: error, status: 'error', className: 'danger'});
-    });
+      .catch(error => {
+        this.creationAlert.set({message: error, status: 'error', className: 'danger'});
+      });
   }
 
 }
 
 /**
-* Component that CreateModal to a workspace app
-*/
+ * Component that CreateModal to a workspace app
+ */
 @Component({
   selector: 'ws-createworkspace',
   templateUrl: './field-createworkspace.html'

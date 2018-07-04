@@ -98,20 +98,26 @@ export module Services {
       return Observable.fromPromise(get);
     }
 
-    createContainer(config: any, app: any, project: any) {
+    createContainer(config: any, app: any, project: any, containerType: string, groupId: number) {
       let jar = requestPromise.jar();
       jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
       jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
       const post = requestPromise({
-        uri: `${config.host}/webclient/action/addnewcontainer/`,
+        uri: `${config.host}/api/v0/m/save/?group=${groupId}`,
         method: 'POST',
         jar: jar,
-        formData: {
-          name: project.name,
-          folder_type: project.type,
-          description: project.description,
-          owner: project.owner || ''
+        body: {
+          'Name': project.name,
+          'Description': project.description,
+          '@type': `http://www.openmicroscopy.org/Schemas/OME/2016-06#${containerType}`
         },
+        json: true,
+        // formData: {
+        //   name: encodeURIComponent(project.name),
+        //   folder_type: project.type,
+        //   description: encodeURIComponent(project.description),
+        //   owner: project.owner || ''
+        // },
         headers: {
           'X-CSRFToken': app.csrf,
           'sessionUuid': app.sessionUuid

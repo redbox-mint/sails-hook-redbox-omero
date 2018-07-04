@@ -43,7 +43,7 @@ module.exports = {
         name: 'ListWorkspaces',
         columns: [
           {'label': 'Name', 'property': 'Name'},
-          {'label': 'Description', 'property': 'description'},
+          {'label': 'Description', 'property': 'Description'},
           {'label': 'Location', 'property': '@id', 'link': 'true',
             'classes': 'btn btn-primary', 'label': 'Open'}
         ],
@@ -69,13 +69,13 @@ module.exports = {
       definition: {
         name: 'LinkModal',
         workspaceDefinition: [
-          {label: 'Name', name: 'name_with_namespace'},
-          {label: 'URL', name: 'web_url'}
+          {label: 'Name', name: 'Name'},
+          {label: 'Description', name: 'Description'}
         ],
         recordMap: [
           {record: 'title', ele: 'Name'},
           {record: 'omeroId', ele: '@id'},
-          {record: 'Description', ele: 'description'},
+          {record: 'description', ele: 'Description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
@@ -101,7 +101,7 @@ module.exports = {
         recordMap: [
           {record: 'title', ele: 'name'},
           {record: 'omeroId', ele: 'id'},
-          {record: 'Description', ele: 'description'},
+          {record: 'description', ele: 'description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],

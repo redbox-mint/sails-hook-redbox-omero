@@ -128,17 +128,20 @@ export module Controllers {
             const appId = this.config.appId;
             const app = response.info;
             const project = req.param('creation');
+            //TODO: add type checking object map here
             project.type = 'project';
-            return OMEROService.createContainer(this.config, app, project);
+            return OMEROService.createContainer(this.config, app, project, 'Project', this.config.defaultGroupId);
           })
           .subscribe(response => {
             sails.log.debug('createProject');
-            sails.log.debug(response);
             let status = true;
-            if (response.bad === 'true') {
-              status = false;
+            let data = {}
+            if (!response.data) {
+              data = {status: false, create: {}};
+
+            }else {
+              data = {status: status, create: response.data};
             }
-            const data = {status: status, create: JSON.parse(response)};
             this.ajaxOk(req, res, null, data);
           }, error => {
             const errorMessage = `Failed to create project for user ${req.user.username}`;
@@ -162,10 +165,8 @@ export module Controllers {
 
         let annId = null;
         let mapAnnotation = [];
-
         let record = WorkspaceService.mapToRecord(project, recordMap);
         record = _.merge(record, {type: this.config.recordType});
-        sails.log.debug('OMERO::LINK::');
 
         let app = {};
         let annotations = [];
@@ -227,7 +228,6 @@ export module Controllers {
               config: this.config, app: app, id: omeroId
             })
           }).flatMap(response => {
-            sails.log.debug('checking recordMeta: ' + rdmpId + ' for omero: ' + omeroId);
             try {
               response = JSON.parse(response) || {};
               mapAnnotation = response.annotations || null;
@@ -241,15 +241,15 @@ export module Controllers {
             }
             return WorkspaceService.getRecordMeta(this.config, rdmpId);
           }).subscribe(recordMetadata => {
+
             if (recordMetadata && recordMetadata['workspaces']) {
-              const wss = recordMetadata.workspaces.find(id => info['workspaceId'] === id);
-              if (!wss) {
+              //const wss = recordMetadata.workspaces.find(id => info['workspaceId'] === id);
+              if (info['rdmpId']) {
                 check.ws = true;
               }
               if (rdmpId === info['rdmpId']) {
                 check.omero = true;
               }
-
             }
             this.ajaxOk(req, res, null, {status: true, check: check});
           }, error => {
@@ -349,6 +349,7 @@ export module Controllers {
     brandingAndPortalUrl: string;
     redboxHeaders: any;
     domain: string;
+    defaultGroupId: number;
 
     set() {
       const workspaceConfig = sails.config.workspaces;
@@ -370,6 +371,7 @@ export module Controllers {
         'Content-Type': 'application/json',
         'Authorization': workspaceConfig.portal.authorization,
       };
+      this.defaultGroupId = OMEROConfig.defaultGroupId
 
     }
   }

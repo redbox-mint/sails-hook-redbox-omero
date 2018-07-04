@@ -32,7 +32,8 @@ module.exports = {
       recordType: 'omero',
       host: 'https://omero-dev.research.uts.edu.au',
       domain: 'omero-dev.research.uts.edu.au',
-      serverId: '1'
+      serverId: '1',
+      defaultGroupId: 1
     }
   }
 };

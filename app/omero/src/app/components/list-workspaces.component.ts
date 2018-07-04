@@ -3,7 +3,7 @@ import {SimpleComponent} from '../shared/form/field-simple.component';
 import {FieldBase} from '../shared/form/field-base';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import * as _ from "lodash-es";
-import { PaginationModule } from 'ngx-bootstrap';
+import {PaginationModule} from 'ngx-bootstrap';
 
 import {OMEROService} from '../omero.service';
 
@@ -76,7 +76,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
   registerEvents() {
     this.fieldMap['LoginWorkspaceApp'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));    //TODO: this next line doesnt work because of when the form is being built
     this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
-    // this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
+    this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
     // this.fieldMap['RevokeLogin'].field['revokePermissions'].subscribe(this.revoke.bind(this));
   }
 
@@ -146,12 +146,10 @@ export class ListWorkspaceDataField extends FieldBase<any> {
       this.omeroService.checkLink({rdmpId: this.rdmp, omeroId: w['@id']})
         .then((response) => {
           const check = response.check;
-          if (check) {
-            if (check.ws && check.omero) {
-              this.workspaces[index]['linkedState'] = 'linked';
-            } else if(check.ws && !check.omero) {
-              this.workspaces[index]['linkedState'] = 'another';
-            }
+          if (check && check.omero) {
+            this.workspaces[index]['linkedState'] = 'linked';
+          } else if (check && check.ws) {
+            this.workspaces[index]['linkedState'] = 'another';
           } else {
             this.workspaces[index]['linkedState'] = 'link';
           }
@@ -165,11 +163,20 @@ export class ListWorkspaceDataField extends FieldBase<any> {
 
   pageChanged(event: any) {
     this.limit = this.workspacesMeta.limit;
-    if(this.currentPage > event.page){
-      this.offset = this.limit - this.offset <= 0 ? 0 : this.limit - this.offset;
-    }else {
-      this.offset = this.limit + this.offset;
+    this.offset = this.workspacesMeta.offset;
+    const currentOffset = event.page * this.limit;
+    console.log(currentOffset)
+    if (this.currentPage > event.page) {
+      if (currentOffset <= this.limit) {
+        this.offset = 0;
+      } else {
+        this.offset = currentOffset <= 0 ? 0 : currentOffset;
+      }
+    } else {
+      this.offset = currentOffset;
     }
+
+    console.log(this.offset);
     this.listWorkspaces();
   }
 

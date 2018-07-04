@@ -93,20 +93,20 @@ var Services;
             });
             return Rx_1.Observable.fromPromise(get);
         };
-        OMEROService.prototype.createContainer = function (config, app, project) {
+        OMEROService.prototype.createContainer = function (config, app, project, containerType, groupId) {
             var jar = requestPromise.jar();
             jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
             jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
             var post = requestPromise({
-                uri: config.host + "/webclient/action/addnewcontainer/",
+                uri: config.host + "/api/v0/m/save/?group=" + groupId,
                 method: 'POST',
                 jar: jar,
-                formData: {
-                    name: project.name,
-                    folder_type: project.type,
-                    description: project.description,
-                    owner: project.owner || ''
+                body: {
+                    'Name': project.name,
+                    'Description': project.description,
+                    '@type': "http://www.openmicroscopy.org/Schemas/OME/2016-06#" + containerType
                 },
+                json: true,
                 headers: {
                     'X-CSRFToken': app.csrf,
                     'sessionUuid': app.sessionUuid

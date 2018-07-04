@@ -129,16 +129,18 @@ var Controllers;
                     var app = response.info;
                     var project = req.param('creation');
                     project.type = 'project';
-                    return OMEROService.createContainer(_this.config, app, project);
+                    return OMEROService.createContainer(_this.config, app, project, 'Project', _this.config.defaultGroupId);
                 })
                     .subscribe(function (response) {
                     sails.log.debug('createProject');
-                    sails.log.debug(response);
                     var status = true;
-                    if (response.bad === 'true') {
-                        status = false;
+                    var data = {};
+                    if (!response.data) {
+                        data = { status: false, create: {} };
                     }
-                    var data = { status: status, create: JSON.parse(response) };
+                    else {
+                        data = { status: status, create: response.data };
+                    }
                     _this.ajaxOk(req, res, null, data);
                 }, function (error) {
                     var errorMessage = "Failed to create project for user " + req.user.username;
@@ -164,7 +166,6 @@ var Controllers;
                 var mapAnnotation_1 = [];
                 var record_1 = WorkspaceService.mapToRecord(project, recordMap);
                 record_1 = _.merge(record_1, { type: this.config.recordType });
-                sails.log.debug('OMERO::LINK::');
                 var app_1 = {};
                 var annotations_1 = [];
                 var rowAnnotation_1;
@@ -226,7 +227,6 @@ var Controllers;
                         config: _this.config, app: app, id: omeroId_1
                     });
                 }).flatMap(function (response) {
-                    sails.log.debug('checking recordMeta: ' + rdmpId_1 + ' for omero: ' + omeroId_1);
                     try {
                         response = JSON.parse(response) || {};
                         mapAnnotation_2 = response.annotations || null;
@@ -241,8 +241,7 @@ var Controllers;
                     return WorkspaceService.getRecordMeta(_this.config, rdmpId_1);
                 }).subscribe(function (recordMetadata) {
                     if (recordMetadata && recordMetadata['workspaces']) {
-                        var wss = recordMetadata.workspaces.find(function (id) { return info_2['workspaceId'] === id; });
-                        if (!wss) {
+                        if (info_2['rdmpId']) {
                             check_1.ws = true;
                         }
                         if (rdmpId_1 === info_2['rdmpId']) {
@@ -347,6 +346,7 @@ var Controllers;
                 'Content-Type': 'application/json',
                 'Authorization': workspaceConfig.portal.authorization,
             };
+            this.defaultGroupId = OMEROConfig.defaultGroupId;
         };
         return Config;
     }());

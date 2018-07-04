@@ -6980,11 +6980,11 @@ var forms_1 = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js")
 var omero_service_1 = __webpack_require__("./src/app/omero.service.ts");
 var shared_1 = __webpack_require__("./src/app/components/shared.ts");
 /**
-* Contributor Model
-*
-* @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
-*
-*/
+ * Contributor Model
+ *
+ * @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
+ *
+ */
 var CreateWorkspaceField = /** @class */ (function (_super) {
     __extends(CreateWorkspaceField, _super);
     function CreateWorkspaceField(options, injector) {
@@ -7049,7 +7049,7 @@ var CreateWorkspaceField = /** @class */ (function (_super) {
         this.creation.clear();
         this.creationAlert.clear();
         console.log('clear');
-        jQuery('#createModal').modal({ show: true, keyboard: false });
+        jQuery('#createModal').modal({ show: true, keyboard: false, backdrop: 'static' });
     };
     CreateWorkspaceField.prototype.create = function () {
         this.validations = this.validateWorkspace();
@@ -7081,8 +7081,9 @@ var CreateWorkspaceField = /** @class */ (function (_super) {
                 throw new Error('Error creating workspace');
             }
             else {
-                _this.creationAlert.set({ message: _this.linkingWorkspace, status: 'linking', className: 'warning' });
-                _this.creation.id = response.create['id'];
+                _this.creationAlert.set({ message: _this.linkingWorkspace, status: 'working', className: 'warning' });
+                _this.creation.id = response.create['@id'];
+                _this.creation.description = response.create['Description'];
                 _this.creation.location = _this.workspaceLink + _this.creation.id;
                 return _this.omeroService.link({
                     rdmp: _this.rdmp, project: _this.creation, recordMap: _this.recordMap
@@ -7107,8 +7108,8 @@ var CreateWorkspaceField = /** @class */ (function (_super) {
 }(field_base_1.FieldBase));
 exports.CreateWorkspaceField = CreateWorkspaceField;
 /**
-* Component that CreateModal to a workspace app
-*/
+ * Component that CreateModal to a workspace app
+ */
 var CreateWorkspaceComponent = /** @class */ (function (_super) {
     __extends(CreateWorkspaceComponent, _super);
     function CreateWorkspaceComponent() {
@@ -7177,11 +7178,11 @@ var forms_1 = __webpack_require__("./node_modules/@angular/forms/esm5/forms.js")
 var shared_1 = __webpack_require__("./src/app/components/shared.ts");
 var omero_service_1 = __webpack_require__("./src/app/omero.service.ts");
 /**
-* Contributor Model
-*
-* @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
-*
-*/
+ * Contributor Model
+ *
+ * @author <a target='_' href='https://github.com/moisbo'>moisbo</a>
+ *
+ */
 var LinkModalWorkspaceField = /** @class */ (function (_super) {
     __extends(LinkModalWorkspaceField, _super);
     function LinkModalWorkspaceField(options, injector) {
@@ -7233,7 +7234,7 @@ var LinkModalWorkspaceField = /** @class */ (function (_super) {
         this.currentWorkspace = workspace;
         this.currentWorkspace.location = this.workspaceLink + workspace['@id'];
         this.checks.clear();
-        jQuery('#linkModal').modal('show');
+        jQuery('#linkModal').modal({ show: true, keyboard: false, backdrop: 'static' });
         this.processing = true;
         this.checks.master = true;
         return this.omeroService.link({
@@ -7265,8 +7266,8 @@ var LinkModalWorkspaceField = /** @class */ (function (_super) {
 }(field_base_1.FieldBase));
 exports.LinkModalWorkspaceField = LinkModalWorkspaceField;
 /**
-* Component that Links Workspaces to Workspace Records in Stash
-*/
+ * Component that Links Workspaces to Workspace Records in Stash
+ */
 var LinkModalWorkspaceComponent = /** @class */ (function (_super) {
     __extends(LinkModalWorkspaceComponent, _super);
     function LinkModalWorkspaceComponent() {
@@ -7278,7 +7279,7 @@ var LinkModalWorkspaceComponent = /** @class */ (function (_super) {
     LinkModalWorkspaceComponent = __decorate([
         core_1.Component({
             selector: 'ws-linkmodal',
-            template: "\n  <div id=\"linkModal\" class=\"modal fade\" data-keyboard=\"false\">\n    <div class=\"modal-dialog\" role=\"document\">\n      <div class=\"modal-content\">\n        <div class=\"modal-header\">\n          <h4 class=\"modal-title\">{{ field.linkModalTitle }}</h4>\n        </div>\n        <div class=\"modal-body\">\n          <h5>{{ field.workspaceDetailsTitle }}</h5>\n          <p *ngFor=\"let item of field.workspaceDefinition\">{{ item.label }} : {{ field.currentWorkspace[item.name] }}</p>\n          <h5>{{ field.processingLabel }}</h5>\n          <p>{{ field.processingMessage }}&nbsp;<span *ngIf=\"field.checks.master; then isDone; else isSpinning\"></span></p>\n          <p *ngIf=\"field.checks.comparing\">{{ field.comparingLabel }}&nbsp;<span *ngIf=\"field.checks.link; then isDone; else isSpinning\"></span></p>\n          <p *ngIf=\"field.checks.link == false\">{{ field.statusLabel }}&nbsp;<span *ngIf=\"field.checks.rdmp; then isDone; else isSpinning\"></span></p>\n          <p class=\"alert alert-success\" *ngIf=\"field.checks.linkCreated\">{{ field.processingSuccess }}</p>\n          <p class=\"alert alert-danger\" *ngIf=\"field.checks.linkWithOther\">{{ field.processingFail }}</p>\n          <p class=\"alert alert-danger\" *ngIf=\"field.processingStatus === 'done' && field.processingFail\">{{ field.processingFail }}</p>\n          <ng-template #isDone>\n            <i class=\"fa fa-check-circle\"></i>\n          </ng-template>\n          <ng-template #isSpinning>\n            <i class=\"fa fa-spinner fa-spin\"></i>\n          </ng-template>\n        </div>\n        <div class=\"modal-footer\">\n          <span *ngIf=\"field.processing; then waitForProcessing; else finishProcessing\"></span>\n          <ng-template #finishProcessing>\n            <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">{{ field.closeLabel }}</button>\n          </ng-template>\n          <ng-template #waitForProcessing>\n            <button type=\"button\" class=\"btn btn-secondary disabled\" data-dismiss=\"modal\">{{ field.closeLabel }}</button>\n          </ng-template>\n        </div>\n      </div>\n    </div>\n  </div>\n  "
+            template: "\n    <div id=\"linkModal\" class=\"modal fade\" data-keyboard=\"false\">\n      <div class=\"modal-dialog\" role=\"document\">\n        <div class=\"modal-content\">\n          <div class=\"modal-header\">\n            <h4 class=\"modal-title\">{{ field.linkModalTitle }}</h4>\n          </div>\n          <div class=\"modal-body\">\n            <h5>{{ field.workspaceDetailsTitle }}</h5>\n            <p *ngFor=\"let item of field.workspaceDefinition\">{{ item.label }} : {{ field.currentWorkspace[item.name]}}</p>\n            <h5>{{ field.processingLabel }}</h5>\n            <p>{{ field.processingMessage }}&nbsp;<span\n              *ngIf=\"field.checks.master; then isDone; else isSpinning\"></span></p>\n            <p *ngIf=\"field.checks.comparing\">{{ field.comparingLabel }}&nbsp;<span\n              *ngIf=\"field.checks.link; then isDone; else isSpinning\"></span></p>\n            <p *ngIf=\"field.checks.link == false\">{{ field.statusLabel }}&nbsp;<span\n              *ngIf=\"field.checks.rdmp; then isDone; else isSpinning\"></span></p>\n            <p class=\"alert alert-success\" *ngIf=\"field.checks.linkCreated\">{{ field.processingSuccess }}</p>\n            <p class=\"alert alert-danger\" *ngIf=\"field.checks.linkWithOther\">{{ field.processingFail }}</p>\n            <p class=\"alert alert-danger\" *ngIf=\"field.processingStatus === 'done' && field.processingFail\">\n              {{ field.processingFail }}</p>\n            <ng-template #isDone>\n              <i class=\"fa fa-check-circle\"></i>\n            </ng-template>\n            <ng-template #isSpinning>\n              <i class=\"fa fa-spinner fa-spin\"></i>\n            </ng-template>\n          </div>\n          <div class=\"modal-footer\">\n            <span *ngIf=\"field.processing; then waitForProcessing; else finishProcessing\"></span>\n            <ng-template #finishProcessing>\n              <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">{{ field.closeLabel }}</button>\n            </ng-template>\n            <ng-template #waitForProcessing>\n              <button type=\"button\" class=\"btn btn-secondary disabled\" data-dismiss=\"modal\">{{ field.closeLabel }}\n              </button>\n            </ng-template>\n          </div>\n        </div>\n      </div>\n    </div>\n  "
         })
     ], LinkModalWorkspaceComponent);
     return LinkModalWorkspaceComponent;
@@ -7359,7 +7360,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
     ListWorkspaceDataField.prototype.registerEvents = function () {
         this.fieldMap['LoginWorkspaceApp'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this)); //TODO: this next line doesnt work because of when the form is being built
         this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
-        // this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
+        this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
         // this.fieldMap['RevokeLogin'].field['revokePermissions'].subscribe(this.revoke.bind(this));
     };
     ListWorkspaceDataField.prototype.init = function () {
@@ -7422,13 +7423,11 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
             _this.omeroService.checkLink({ rdmpId: _this.rdmp, omeroId: w['@id'] })
                 .then(function (response) {
                 var check = response.check;
-                if (check) {
-                    if (check.ws && check.omero) {
-                        _this.workspaces[index]['linkedState'] = 'linked';
-                    }
-                    else if (check.ws && !check.omero) {
-                        _this.workspaces[index]['linkedState'] = 'another';
-                    }
+                if (check && check.omero) {
+                    _this.workspaces[index]['linkedState'] = 'linked';
+                }
+                else if (check && check.ws) {
+                    _this.workspaces[index]['linkedState'] = 'another';
                 }
                 else {
                     _this.workspaces[index]['linkedState'] = 'link';
@@ -7442,12 +7441,21 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
     };
     ListWorkspaceDataField.prototype.pageChanged = function (event) {
         this.limit = this.workspacesMeta.limit;
+        this.offset = this.workspacesMeta.offset;
+        var currentOffset = event.page * this.limit;
+        console.log(currentOffset);
         if (this.currentPage > event.page) {
-            this.offset = this.limit - this.offset <= 0 ? 0 : this.limit - this.offset;
+            if (currentOffset <= this.limit) {
+                this.offset = 0;
+            }
+            else {
+                this.offset = currentOffset <= 0 ? 0 : currentOffset;
+            }
         }
         else {
-            this.offset = this.limit + this.offset;
+            this.offset = currentOffset;
         }
+        console.log(this.offset);
         this.listWorkspaces();
     };
     ListWorkspaceDataField.prototype.setPage = function (pageNo) {
