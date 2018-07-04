@@ -90,12 +90,14 @@ var Controllers;
             }
             else {
                 var userId = req.user.id;
+                var limit_1 = req.param('limit') || 10;
+                var offset_1 = req.param('offset') || 0;
                 return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
                     .flatMap(function (response) {
                     sails.log.debug('userInfo');
                     if (response.info) {
                         var app = response.info;
-                        return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid);
+                        return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid, limit_1, offset_1);
                     }
                     else {
                         throw new Error('Missing application credentials');

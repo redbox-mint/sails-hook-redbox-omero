@@ -3,6 +3,7 @@ import {SimpleComponent} from '../shared/form/field-simple.component';
 import {FieldBase} from '../shared/form/field-base';
 import {FormGroup, FormControl, Validators} from '@angular/forms';
 import * as _ from "lodash-es";
+import { PaginationModule } from 'ngx-bootstrap';
 
 import {OMEROService} from '../omero.service';
 
@@ -37,6 +38,11 @@ export class ListWorkspaceDataField extends FieldBase<any> {
   linkedAnotherLabel: string;
   linkLabel: string;
   linkProblem: string;
+  currentPage: number = 1;
+  totalItems: number;
+  limit: number;
+  offset: number;
+  workspacesMeta: any;
 
   @Output() checkLoggedIn: EventEmitter<any> = new EventEmitter<any>();
   @Output() linkModal: EventEmitter<any> = new EventEmitter<any>();
@@ -62,11 +68,14 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.linkedAnotherLabel = options['linkedAnotherLabel'] || 'Linked to another workspace';
     this.linkLabel = options['linkLabel'] || 'Link Workspace';
     this.linkProblem = options['linkProblem'] || 'There was a problem checking the link';
+    this.limit = 10;
+    this.offset = 0;
+    this.workspacesMeta = {};
   }
 
   registerEvents() {
     this.fieldMap['LoginWorkspaceApp'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));    //TODO: this next line doesnt work because of when the form is being built
-    // this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
+    this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
     // this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
     // this.fieldMap['RevokeLogin'].field['revokePermissions'].subscribe(this.revoke.bind(this));
   }
@@ -106,7 +115,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
   listWorkspaces() {
     this.loading = true;
     this.workspaces = [];
-    return this.omeroService.projects()
+    return this.omeroService.projects(this.limit, this.offset)
       .then(response => {
         this.loading = false;
         if (!response.status) {
@@ -114,6 +123,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
           this.checkLoggedIn.emit(false);
         } else {
           this.loggedIn = this.fieldMap._rootComp.loggedIn = true;
+          this.workspacesMeta = response.projects.meta;
           this.workspaces = response.projects.data;
           this.checkLoggedIn.emit(true);
           this.checkLinks();
@@ -139,11 +149,11 @@ export class ListWorkspaceDataField extends FieldBase<any> {
           if (check) {
             if (check.ws && check.omero) {
               this.workspaces[index]['linkedState'] = 'linked';
-            } else {
-              this.workspaces[index]['linkedState'] = 'link';
+            } else if(check.ws && !check.omero) {
+              this.workspaces[index]['linkedState'] = 'another';
             }
           } else {
-            this.workspaces[index]['linkedState'] = 'another';
+            this.workspaces[index]['linkedState'] = 'link';
           }
         })
         .catch((error) => {
@@ -151,6 +161,20 @@ export class ListWorkspaceDataField extends FieldBase<any> {
           this.workspaces[index]['linkedState'] = 'problem';
         });
     });
+  }
+
+  pageChanged(event: any) {
+    this.limit = this.workspacesMeta.limit;
+    if(this.currentPage > event.page){
+      this.offset = this.limit - this.offset <= 0 ? 0 : this.limit - this.offset;
+    }else {
+      this.offset = this.limit + this.offset;
+    }
+    this.listWorkspaces();
+  }
+
+  setPage(pageNo: number): void {
+    this.currentPage = pageNo;
   }
 
 }

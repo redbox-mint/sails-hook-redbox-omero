@@ -50,8 +50,8 @@ export class OMEROService extends BaseService {
       });
   }
 
-  projects() {
-    const wsUrl = this.brandingAndPortalUrl + '/ws/omero/projects';
+  projects(limit: number, offset: number) {
+    const wsUrl = `${this.brandingAndPortalUrl}/ws/omero/projects/${limit}/${offset}`;
     return this.http.get(
       wsUrl,
       this.options

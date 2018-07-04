@@ -43,7 +43,7 @@ module.exports = {
         name: 'ListWorkspaces',
         columns: [
           {'label': 'Name', 'property': 'Name'},
-          {'label': 'Description', 'property': 'Description'},
+          {'label': 'Description', 'property': 'description'},
           {'label': 'Location', 'property': '@id', 'link': 'true',
             'classes': 'btn btn-primary', 'label': 'Open'}
         ],
@@ -75,7 +75,7 @@ module.exports = {
         recordMap: [
           {record: 'title', ele: 'Name'},
           {record: 'omeroId', ele: '@id'},
-          {record: 'description', ele: 'description'},
+          {record: 'Description', ele: 'description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
@@ -101,7 +101,7 @@ module.exports = {
         recordMap: [
           {record: 'title', ele: 'name'},
           {record: 'omeroId', ele: 'id'},
-          {record: 'description', ele: 'description'},
+          {record: 'Description', ele: 'description'},
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],

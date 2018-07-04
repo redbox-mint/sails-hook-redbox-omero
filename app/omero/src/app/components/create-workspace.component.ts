@@ -151,6 +151,7 @@ export class CreateWorkspaceField extends FieldBase<any> {
 
   createWorkspace() {
     this.creationAlert.set({message: this.creatingWorkspace, status: 'working', className: 'warning'});
+
     this.omeroService.createWorkspace(this.creation)
     .then(response => {
       if(!response.status) {

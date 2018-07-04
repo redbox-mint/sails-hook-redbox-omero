@@ -92,12 +92,14 @@ export module Controllers {
         this.ajaxFail(req, res, `User not authenticated`);
       } else {
         const userId = req.user.id;
+        const limit = req.param('limit') || 10;
+        const offset = req.param('offset') || 0;
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
             sails.log.debug('userInfo');
             if (response.info) {
               const app = response.info;
-              return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid);
+              return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid, limit, offset);
             } else {
               throw new Error('Missing application credentials');
             }

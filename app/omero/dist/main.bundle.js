@@ -7134,14 +7134,14 @@ exports.CreateWorkspaceComponent = CreateWorkspaceComponent;
 /***/ "./src/app/components/field-createworkspace.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"field.loggedIn\" class='padding-bottom-10'>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-success\" (click)=\"field.loadCreateWorkspaceModal()\"><i class=\"fa fa-plus-square\"></i>&nbsp;{{ field.createLabel }}</button>\n  </div>\n</div>\n<div id=\"createModal\" class=\"modal fade\" data-keyboard=\"false\">\n  <div class=\"modal-dialog\" role=\"document\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <h4 class=\"modal-title\">{{ field.createWorkspaceLabel }}</h4>\n      </div>\n      <div class=\"modal-body\">\n        <div *ngIf=\"field.loadingModal\" class=\"row\">\n          <img class=\"center-block\" src=\"/images/loading.svg\">\n        </div>\n        <div *ngIf=\"!field.loadingModal\">\n          <h5>{{ field.workspaceDetailsLabel }}</h5>\n          <form *ngIf=\"!field.processing\" #form=\"ngForm\" novalidate autocomplete=\"off\">\n            <div class=\"form-group\">\n              <h4>{{ field.nameWorkspace }}</h4>\n              <input required minlength=\"4\" type=\"text\" class=\"form-control\" name=\"creationName\" [(ngModel)]=\"field.creation.name\">\n            </div>\n            <div class=\"form-group\">\n              <h4>{{ field.addDescription }}</h4>\n              <input required minlength=\"4\" type=\"text\" class=\"form-control\" name=\"description\" [(ngModel)]=\"field.creation.description\">\n            </div>\n          </form>\n          <form *ngIf=\"!field.processing\" #form=\"ngForm\" novalidate autocomplete=\"off\">\n            <div class=\"form-group\">\n              <div *ngFor=\"let validation of field.validations\" class=\"alert alert-danger\">\n                <span><i class=\"fa fa-times\"></i> </span>{{ validation.message }}\n              </div>\n            </div>\n            <div class=\"form-group\">\n              <div *ngIf=\"field.creationAlert.message\" class=\"alert alert-{{ field.creationAlert.className  || 'alert' }}\">\n                <span *ngIf=\"field.creationAlert.status === 'success'; then isDone; else isWorking;\"></span>\n                <ng-template #isDone>\n                  <i class=\"fa fa-check-circle\"></i>{{ field.creationAlert.message }}\n                </ng-template>\n                <ng-template #isWorking>\n                  <i class=\"fa fa-spin-circle\"></i>{{ field.creationAlert.message }}\n                </ng-template>\n              </div>\n            </div>\n\n          </form>\n        </div>\n      </div>\n      <div class=\"modal-footer\">\n        <span *ngIf=\"field.creationAlert.status === 'working'; then buttonsBlocked; else buttonsDone;\"></span>\n        <ng-template #buttonsDone>\n          <button class=\"btn btn-primary\" (click)=\"field.create()\" type=\"submit\">{{ field.createLabel }}</button>\n          <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">{{ field.dismissLabel }}</button>\n        </ng-template>\n        <ng-template #buttonsBlocked>\n          <button class=\"btn btn-primary disabled\"  type=\"submit\">{{ field.createLabel }}</button>\n          <button class=\"btn btn-secondary disabled\" type=\"button\">{{ field.dismissLabel }}</button>\n        </ng-template>\n      </div>\n    </div>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"field.loggedIn\" class='padding-bottom-10'>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-success\" (click)=\"field.loadCreateWorkspaceModal()\"><i class=\"fa fa-plus-square\"></i>&nbsp;{{ field.createLabel }}</button>\n  </div>\n</div>\n<div id=\"createModal\" class=\"modal fade\" data-keyboard=\"false\">\n  <div class=\"modal-dialog\" role=\"document\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <h4 class=\"modal-title\">{{ field.createWorkspaceLabel }}</h4>\n      </div>\n      <div class=\"modal-body\">\n        <div *ngIf=\"field.loadingModal\" class=\"row\">\n          <img class=\"center-block\" src=\"/images/loading.svg\">\n        </div>\n        <div *ngIf=\"!field.loadingModal\">\n          <h5>{{ field.workspaceDetailsLabel }}</h5>\n          <form *ngIf=\"!field.processing\" #form=\"ngForm\" novalidate autocomplete=\"off\">\n            <div class=\"form-group\">\n              <h4>{{ field.nameWorkspace }}</h4>\n              <input required minlength=\"4\" type=\"text\" class=\"form-control\" name=\"creationName\" [(ngModel)]=\"field.creation.name\">\n            </div>\n            <div class=\"form-group\">\n              <h4>{{ field.addDescription }}</h4>\n              <input required minlength=\"4\" type=\"text\" class=\"form-control\" name=\"description\" [(ngModel)]=\"field.creation.description\">\n            </div>\n          </form>\n          <form *ngIf=\"!field.processing\" #form=\"ngForm\" novalidate autocomplete=\"off\">\n            <div class=\"form-group\">\n              <div *ngFor=\"let validation of field.validations\" class=\"alert alert-danger\">\n                <span><i class=\"fa fa-times\"></i> </span>{{ validation.message }}\n              </div>\n            </div>\n            <div class=\"form-group\">\n              <div *ngIf=\"field.creationAlert.message\" class=\"alert alert-{{ field.creationAlert.className  || 'alert' }}\">\n                <span *ngIf=\"field.creationAlert.status === 'success'; then isDone; else isWorking;\"></span>\n                <ng-template #isDone>\n                  <i class=\"fa fa-check-circle\"></i>{{ field.creationAlert.message }}\n                </ng-template>\n                <ng-template #isWorking>\n                  <i class=\"fa fa-spin-circle\"></i>{{ field.creationAlert.message }}\n                </ng-template>\n              </div>\n            </div>\n\n          </form>\n        </div>\n      </div>\n      <div class=\"modal-footer\">\n        <span *ngIf=\"field.creationAlert.status === 'working'; then buttonsBlocked; else buttonsDone;\"></span>\n        <ng-template #buttonsDone>\n          <button class=\"btn btn-primary\" (click)=\"field.create()\" type=\"submit\">{{ field.createLabel }}</button>\n          <button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">{{ field.dismissLabel }}</button>\n        </ng-template>\n        <ng-template #buttonsBlocked>\n          <button disabled class=\"btn btn-primary\"  type=\"submit\">{{ field.createLabel }}</button>\n          <button disabled class=\"btn btn-secondary\" type=\"button\">{{ field.dismissLabel }}</button>\n        </ng-template>\n      </div>\n    </div>\n  </div>\n</div>\n"
 
 /***/ }),
 
 /***/ "./src/app/components/field-listworkspaces.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div *ngIf=\"field.loggedIn\" class=\"padding-bottom-10\">\n  <div class=\"\">\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <ng-container *ngFor=\"let header of field.columns\"><th>{{ header.label }}</th></ng-container>\n          <th>{{ field.rdmpLinkLabel }}</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr *ngFor=\"let item of field.workspaces\">\n          <ng-container *ngFor=\"let column of field.columns\">\n          <td *ngIf=\"column.show != false\">\n            <span *ngIf=\"column.link; else noProcessing\"><a target=\"_blank\" class=\"{{column.classes || ''}}\" rel=\"noopener noreferrer\" href=\"{{ field.workspaceLink + item[column.property] }}\">{{ column.label || ''}}</a></span>\n            <ng-template #multivalue></ng-template>\n            <ng-template #noProcessing><span >{{ item[column.property] }}</span></ng-template>\n          </td>\n          </ng-container>\n          <td>\n            <span *ngIf=\"!item['linkedState']\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\"><span><i class=\"fa fa-spinner fa-spin\"></i></span></button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'linked'\">\n              <button type=\"button\" disabled class=\"btn btn-success btn-block\" [name]=\"item['@id']\">{{ field.linkedLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'another'\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\">{{ field.linkedAnotherLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'link'\">\n              <button type=\"button\" class=\"btn btn-info btn-block\" [name]=\"item['@id']\" (click)=\"field.linkWorkspace(item)\">{{ field.linkLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'problem'\">\n              <button type=\"button\" disabled class=\"btn btn-warning btn-block\" [name]=\"item['@id']\" >{{ field.linkProblem }}</button>\n            </span>\n          </td>\n        </tr>\n      </tbody>\n    </table>\n    <div *ngIf=\"field.loading\" class=\"\">\n      <img class=\"center-block\" src=\"/images/loading.svg\">\n    </div>\n    <p *ngIf=\"field.failedObjects.length > 0\">There were {{ field.failedObjects.length }} records that failed to load</p>\n    <p *ngIf=\"field.accessDeniedObjects.length > 0\">There were {{ field.accessDeniedObjects.length }} records that you do not have access to</p>\n  </div>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-default\" (click)=\"field.listWorkspaces()\"><i class=\"fa fa-refresh\"></i>&nbsp;{{ field.syncLabel }}</button>\n  </div>\n</div>\n"
+module.exports = "<div *ngIf=\"field.loggedIn\" class=\"padding-bottom-10\">\n  <div class=\"\">\n    <table class=\"table\">\n      <thead>\n        <tr>\n          <ng-container *ngFor=\"let header of field.columns\"><th>{{ header.label }}</th></ng-container>\n          <th>{{ field.rdmpLinkLabel }}</th>\n        </tr>\n      </thead>\n      <tbody>\n        <tr *ngFor=\"let item of field.workspaces\">\n          <ng-container *ngFor=\"let column of field.columns\">\n          <td *ngIf=\"column.show != false\">\n            <span *ngIf=\"column.link; else noProcessing\"><a target=\"_blank\" class=\"{{column.classes || ''}}\" rel=\"noopener noreferrer\" href=\"{{ field.workspaceLink + item[column.property] }}\">{{ column.label || ''}}</a></span>\n            <ng-template #multivalue></ng-template>\n            <ng-template #noProcessing><span >{{ item[column.property] }}</span></ng-template>\n          </td>\n          </ng-container>\n          <td>\n            <span *ngIf=\"!item['linkedState']\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\"><span><i class=\"fa fa-spinner fa-spin\"></i></span></button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'linked'\">\n              <button type=\"button\" disabled class=\"btn btn-success btn-block\" [name]=\"item['@id']\">{{ field.linkedLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'another'\">\n              <button type=\"button\" disabled class=\"btn btn-info btn-block\" [name]=\"item['@id']\">{{ field.linkedAnotherLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'link'\">\n              <button type=\"button\" class=\"btn btn-info btn-block\" [name]=\"item['@id']\" (click)=\"field.linkWorkspace(item)\">{{ field.linkLabel }}</button>\n            </span>\n            <span *ngIf=\"item['linkedState'] === 'problem'\">\n              <button type=\"button\" disabled class=\"btn btn-warning btn-block\" [name]=\"item['@id']\" >{{ field.linkProblem }}</button>\n            </span>\n          </td>\n        </tr>\n      </tbody>\n    </table>\n    <pagination [directionLinks]=\"false\" [boundaryLinks]=\"true\" [totalItems]=\"field.workspacesMeta.totalCount\"\n                [(ngModel)]=\"field.currentPage\" (pageChanged)=\"field.pageChanged($event)\" class=\"pagination-sm\"></pagination>\n    <div *ngIf=\"field.loading\" class=\"\">\n      <img class=\"center-block\" src=\"/images/loading.svg\">\n    </div>\n    <p *ngIf=\"field.failedObjects.length > 0\">There were {{ field.failedObjects.length }} records that failed to load</p>\n    <p *ngIf=\"field.accessDeniedObjects.length > 0\">There were {{ field.accessDeniedObjects.length }} records that you do not have access to</p>\n  </div>\n  <div class=\"\">\n    <button type=\"button\" class=\"btn btn-default\" (click)=\"field.listWorkspaces()\"><i class=\"fa fa-refresh\"></i>&nbsp;{{ field.syncLabel }}</button>\n  </div>\n</div>\n"
 
 /***/ }),
 
@@ -7329,6 +7329,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
     __extends(ListWorkspaceDataField, _super);
     function ListWorkspaceDataField(options, injector) {
         var _this = _super.call(this, options, injector) || this;
+        _this.currentPage = 1;
         _this.checkLoggedIn = new core_1.EventEmitter();
         _this.linkModal = new core_1.EventEmitter();
         _this.setWorkspaceUser = new core_1.EventEmitter();
@@ -7350,11 +7351,14 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         _this.linkedAnotherLabel = options['linkedAnotherLabel'] || 'Linked to another workspace';
         _this.linkLabel = options['linkLabel'] || 'Link Workspace';
         _this.linkProblem = options['linkProblem'] || 'There was a problem checking the link';
+        _this.limit = 10;
+        _this.offset = 0;
+        _this.workspacesMeta = {};
         return _this;
     }
     ListWorkspaceDataField.prototype.registerEvents = function () {
         this.fieldMap['LoginWorkspaceApp'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this)); //TODO: this next line doesnt work because of when the form is being built
-        // this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
+        this.fieldMap['CreateWorkspace'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
         // this.fieldMap['LinkModal'].field['listWorkspaces'].subscribe(this.listWorkspaces.bind(this));
         // this.fieldMap['RevokeLogin'].field['revokePermissions'].subscribe(this.revoke.bind(this));
     };
@@ -7387,7 +7391,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         var _this = this;
         this.loading = true;
         this.workspaces = [];
-        return this.omeroService.projects()
+        return this.omeroService.projects(this.limit, this.offset)
             .then(function (response) {
             _this.loading = false;
             if (!response.status) {
@@ -7396,6 +7400,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
             }
             else {
                 _this.loggedIn = _this.fieldMap._rootComp.loggedIn = true;
+                _this.workspacesMeta = response.projects.meta;
                 _this.workspaces = response.projects.data;
                 _this.checkLoggedIn.emit(true);
                 _this.checkLinks();
@@ -7421,12 +7426,12 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
                     if (check.ws && check.omero) {
                         _this.workspaces[index]['linkedState'] = 'linked';
                     }
-                    else {
-                        _this.workspaces[index]['linkedState'] = 'link';
+                    else if (check.ws && !check.omero) {
+                        _this.workspaces[index]['linkedState'] = 'another';
                     }
                 }
                 else {
-                    _this.workspaces[index]['linkedState'] = 'another';
+                    _this.workspaces[index]['linkedState'] = 'link';
                 }
             })
                 .catch(function (error) {
@@ -7434,6 +7439,19 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
                 _this.workspaces[index]['linkedState'] = 'problem';
             });
         });
+    };
+    ListWorkspaceDataField.prototype.pageChanged = function (event) {
+        this.limit = this.workspacesMeta.limit;
+        if (this.currentPage > event.page) {
+            this.offset = this.limit - this.offset <= 0 ? 0 : this.limit - this.offset;
+        }
+        else {
+            this.offset = this.limit + this.offset;
+        }
+        this.listWorkspaces();
+    };
+    ListWorkspaceDataField.prototype.setPage = function (pageNo) {
+        this.currentPage = pageNo;
     };
     __decorate([
         core_1.Output(),
@@ -7914,6 +7932,7 @@ var http_1 = __webpack_require__("./node_modules/@angular/http/esm5/http.js");
 var omero_form_component_1 = __webpack_require__("./src/app/omero-form.component.ts");
 var omero_service_1 = __webpack_require__("./src/app/omero.service.ts");
 var shared_module_1 = __webpack_require__("./redbox-portal/angular/shared/shared.module.ts");
+var ngx_bootstrap_1 = __webpack_require__("./node_modules/ngx-bootstrap/index.js");
 var login_workspaceapp_component_1 = __webpack_require__("./src/app/components/login-workspaceapp.component.ts");
 var list_workspaces_component_1 = __webpack_require__("./src/app/components/list-workspaces.component.ts");
 var linkmodal_workspace_component_1 = __webpack_require__("./src/app/components/linkmodal-workspace.component.ts");
@@ -7924,7 +7943,7 @@ var OMEROModule = /** @class */ (function () {
     OMEROModule = __decorate([
         core_1.NgModule({
             imports: [platform_browser_1.BrowserModule, http_1.HttpModule, forms_1.ReactiveFormsModule,
-                shared_module_1.SharedModule, forms_1.FormsModule
+                shared_module_1.SharedModule, forms_1.FormsModule, ngx_bootstrap_1.PaginationModule.forRoot()
             ],
             declarations: [omero_form_component_1.OMEROFormComponent,
                 list_workspaces_component_1.ListWorkspaceDataComponent, login_workspaceapp_component_1.LoginWorkspaceAppComponent,
@@ -8013,9 +8032,9 @@ var OMEROService = /** @class */ (function (_super) {
             return _this.extractData(res);
         });
     };
-    OMEROService.prototype.projects = function () {
+    OMEROService.prototype.projects = function (limit, offset) {
         var _this = this;
-        var wsUrl = this.brandingAndPortalUrl + '/ws/omero/projects';
+        var wsUrl = this.brandingAndPortalUrl + "/ws/omero/projects/" + limit + "/" + offset;
         return this.http.get(wsUrl, this.options)
             .toPromise()
             .then(function (res) {

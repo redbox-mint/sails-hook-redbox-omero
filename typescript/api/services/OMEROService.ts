@@ -83,12 +83,12 @@ export module Services {
       return Observable.fromPromise(post);
     }
 
-    projects(config: any, csrf: string, sessionid: string, sessionUuid: string) {
+    projects(config: any, csrf: string, sessionid: string, sessionUuid: string, limit: number, offset: number) {
       let jar = requestPromise.jar();
       jar = this.cookieJar(jar, config, 'csrftoken', csrf);
       jar = this.cookieJar(jar, config, 'sessionid', sessionid);
       const get = requestPromise({
-        uri: `${config.host}/api/v0/m/projects/`,
+        uri: `${config.host}/api/v0/m/projects/?limit=${limit}&offset=${offset}`,
         jar: jar,
         headers: {
           'X-CSRFToken': csrf,
