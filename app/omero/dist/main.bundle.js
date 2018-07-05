@@ -7447,7 +7447,7 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
     ListWorkspaceDataField.prototype.pageChanged = function (event) {
         this.limit = this.workspacesMeta.limit;
         this.offset = this.workspacesMeta.offset;
-        var currentOffset = event.page * this.limit;
+        var currentOffset = (event.page * this.limit) - this.limit;
         console.log(this.limit);
         if (this.currentPage > event.page) {
             if (currentOffset <= this.limit) {
