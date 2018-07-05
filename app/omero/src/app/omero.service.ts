@@ -104,6 +104,7 @@ export class OMEROService extends BaseService {
       {rdmpId: rdmpId, omeroId: omeroId},
       this.options
     )
+      .delay(500)
       .toPromise()
       .then((res: any) => {
         return this.extractData(res);

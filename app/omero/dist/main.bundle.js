@@ -7448,7 +7448,6 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         this.limit = this.workspacesMeta.limit;
         this.offset = this.workspacesMeta.offset;
         var currentOffset = (event.page * this.limit) - this.limit;
-        console.log(this.limit);
         if (this.currentPage > event.page) {
             if (currentOffset <= this.limit) {
                 this.offset = 0;
@@ -7460,7 +7459,6 @@ var ListWorkspaceDataField = /** @class */ (function (_super) {
         else {
             this.offset = currentOffset;
         }
-        console.log(this.offset);
         this.listWorkspaces();
     };
     ListWorkspaceDataField.prototype.setPage = function (pageNo) {
@@ -8087,6 +8085,7 @@ var OMEROService = /** @class */ (function (_super) {
         var rdmpId = _a.rdmpId, omeroId = _a.omeroId;
         var wsUrl = this.brandingAndPortalUrl + '/ws/omero/checkLink';
         return this.http.post(wsUrl, { rdmpId: rdmpId, omeroId: omeroId }, this.options)
+            .delay(500)
             .toPromise()
             .then(function (res) {
             return _this.extractData(res);

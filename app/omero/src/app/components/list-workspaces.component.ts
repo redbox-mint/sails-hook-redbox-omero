@@ -169,7 +169,6 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     this.limit = this.workspacesMeta.limit;
     this.offset = this.workspacesMeta.offset;
     const currentOffset = (event.page * this.limit) - this.limit;
-    console.log(this.limit)
     if (this.currentPage > event.page) {
       if (currentOffset <= this.limit) {
         this.offset = 0;
@@ -179,7 +178,6 @@ export class ListWorkspaceDataField extends FieldBase<any> {
     } else {
       this.offset = currentOffset;
     }
-    console.log(this.offset);
     this.listWorkspaces();
   }
 
