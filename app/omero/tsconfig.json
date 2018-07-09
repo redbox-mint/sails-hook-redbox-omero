@@ -16,14 +16,17 @@
       "dom"
     ]
   },
+  "types": [
+    "jquery"
+  ],
   "include": [
     "src/**/*",
     "redbox-portal/angular/shared/**/*.ts",
-    "./node_modules/ng2-datetime/ng2-datetime.ts"
+    "node_modules/ng2-datetime/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
-  ]
-
+  ],
+  "allowSyntheticDefaultImports": true
 }

@@ -6,7 +6,7 @@ import { OMEROFormComponent } from './omero-form.component';
 import { OMEROService } from './omero.service';
 import { WorkspaceFieldComponent } from './shared/form/workspace-field.component';
 import { SharedModule } from './shared/shared.module';
-import { PaginationModule } from 'ngx-bootstrap';
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 import { LoginWorkspaceAppComponent } from './components/login-workspaceapp.component';
 import { ListWorkspaceDataComponent } from './components/list-workspaces.component';
