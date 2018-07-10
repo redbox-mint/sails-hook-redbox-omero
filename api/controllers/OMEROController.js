@@ -59,8 +59,10 @@ var Controllers;
                         sessionid: OMEROService.getCookieValue(cookieJar, 'sessionid'),
                         sessionUuid: sessionUuid,
                         memberOfGroups: login.memberOfGroups,
-                        groupId: login.groupId
+                        groupId: login.groupId,
+                        userId: login.userId
                     };
+                    sails.log.debug(info_1);
                     return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
                 })
                     .flatMap(function (response) {
@@ -97,7 +99,7 @@ var Controllers;
                     sails.log.debug('userInfo');
                     if (response.info) {
                         var app = response.info;
-                        return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid, limit_1, offset_1);
+                        return OMEROService.projects(_this.config, app.csrf, app.sessionid, app.sessionUuid, limit_1, offset_1, app.userId);
                     }
                     else {
                         throw new Error('Missing application credentials');

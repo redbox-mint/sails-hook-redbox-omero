@@ -79,12 +79,12 @@ var Services;
             });
             return Rx_1.Observable.fromPromise(post);
         };
-        OMEROService.prototype.projects = function (config, csrf, sessionid, sessionUuid, limit, offset) {
+        OMEROService.prototype.projects = function (config, csrf, sessionid, sessionUuid, limit, offset, owner) {
             var jar = requestPromise.jar();
             jar = this.cookieJar(jar, config, 'csrftoken', csrf);
             jar = this.cookieJar(jar, config, 'sessionid', sessionid);
             var get = requestPromise({
-                uri: config.host + "/api/v0/m/projects/?limit=" + limit + "&offset=" + offset,
+                uri: config.host + "/api/v0/m/projects/?limit=" + limit + "&offset=" + offset + "&owner=" + owner,
                 jar: jar,
                 headers: {
                     'X-CSRFToken': csrf,
