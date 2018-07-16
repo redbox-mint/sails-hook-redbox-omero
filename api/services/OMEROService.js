@@ -12,6 +12,7 @@ var __extends = (this && this.__extends) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var Rx_1 = require("rxjs/Rx");
 var requestPromise = require("request-promise");
+var _ = require("lodash");
 var services = require("../core/CoreService.js");
 var Services;
 (function (Services) {
@@ -27,7 +28,8 @@ var Services;
                 'annotateMap',
                 'annotations',
                 'getCookies',
-                'getCookieValue'
+                'getCookieValue',
+                'images'
             ];
             return _this_1;
         }
@@ -153,6 +155,38 @@ var Services;
                 }
             });
             return Rx_1.Observable.fromPromise(get);
+        };
+        OMEROService.prototype.images = function (_a) {
+            var config = _a.config, app = _a.app, offset = _a.offset, limit = _a.limit, owner = _a.owner, group = _a.group, normalize = _a.normalize;
+            var jar = requestPromise.jar();
+            jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+            jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+            var post = requestPromise({
+                uri: config.host + "/api/v0/m/images/?offset=" + offset + "&limit=" + limit + "&owner=" + owner + "&group=" + group + "&normalize=" + normalize,
+                method: 'GET',
+                jar: jar,
+                headers: {
+                    'X-CSRFToken': app.csrf,
+                    'sessionUuid': app.sessionUuid
+                }
+            });
+            return Rx_1.Observable.fromPromise(post);
+        };
+        OMEROService.prototype.image = function (_a) {
+            var config = _a.config, app = _a.app, imageId = _a.imageId;
+            var jar = requestPromise.jar();
+            jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+            jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+            var post = requestPromise({
+                uri: config.host + "/api/v0/m/images/" + imageId + "/",
+                method: 'GET',
+                jar: jar,
+                headers: {
+                    'X-CSRFToken': app.csrf,
+                    'sessionUuid': app.sessionUuid
+                }
+            });
+            return Rx_1.Observable.fromPromise(post);
         };
         return OMEROService;
     }(services.Services.Core.Service));

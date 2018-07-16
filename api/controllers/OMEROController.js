@@ -24,7 +24,8 @@ var Controllers;
                 'projects',
                 'create',
                 'link',
-                'checkLink'
+                'checkLink',
+                'images'
             ];
             _this.config = new Config();
             return _this;
@@ -62,12 +63,11 @@ var Controllers;
                         groupId: login.groupId,
                         userId: login.userId
                     };
-                    sails.log.debug(info_1);
-                    return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
+                    return WorkspaceService.updateWorkspaceInfo(userId_1, info_1);
                 })
                     .flatMap(function (response) {
-                    if (response.id && response.info !== info_1) {
-                        return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
+                    if (_.isEqual(response.info, info_1)) {
+                        return WorkspaceService.updateWorkspaceInfo(userId_1, info_1);
                     }
                     else {
                         return WorkspaceService.createWorkspaceInfo(userId_1, _this.config.appName, info_1);
@@ -321,6 +321,40 @@ var Controllers;
             }
             else {
                 return { rdmpId: null, workspaceId: null };
+            }
+        };
+        OMEROController.prototype.images = function (req, res) {
+            var _this = this;
+            this.config.set();
+            if (!req.isAuthenticated()) {
+                this.ajaxFail(req, res, "User not authenticated");
+            }
+            else {
+                var userId_2 = req.user.id;
+                var offset_2 = 10;
+                var limit_2 = 10;
+                var normalize_1 = 'false';
+                var app_2 = {};
+                return WorkspaceService.workspaceAppFromUserId(userId_2, this.config.appName)
+                    .flatMap(function (response) {
+                    app_2 = response.info;
+                    if (response.info) {
+                        var app_3 = response.info;
+                        return OMEROService.images({
+                            config: _this.config, app: app_3, offset: offset_2, limit: limit_2,
+                            owner: app_3.userId, group: app_3.ownerId, normalize: normalize_1
+                        });
+                    }
+                    else {
+                        throw new Error('Missing application credentials');
+                    }
+                }).subscribe(function (response) {
+                    _this.ajaxOk(req, res, null, { status: true, response: response });
+                }, function (error) {
+                    var errorMessage = "Failed to get images of user: " + userId_2;
+                    sails.log.error(errorMessage);
+                    _this.ajaxFail(req, res, errorMessage, error);
+                });
             }
         };
         return OMEROController;

@@ -2,7 +2,8 @@ import {Observable, Scheduler} from 'rxjs/Rx';
 import {Sails, Model} from 'sails';
 import * as requestPromise from 'request-promise';
 import * as tough from "tough-cookie";
-declare var _;
+
+import * as _ from 'lodash';
 
 import services = require('../core/CoreService.js');
 
@@ -23,17 +24,18 @@ export module Services {
       'annotateMap',
       'annotations',
       'getCookies',
-      'getCookieValue'
+      'getCookieValue',
+      'images'
     ];
 
     constructor() {
       super();
     }
 
-    cookieJar(jar: any, config:any, key: string, value: string){
+    cookieJar(jar: any, config: any, key: string, value: string) {
       const keyvalue = key + '=' + value;
       const cookie = requestPromise.cookie('' + keyvalue);
-      jar.setCookie(cookie, config.host, function(error, cookie) {
+      jar.setCookie(cookie, config.host, function (error, cookie) {
         //sails.log.debug(cookie);
       });
       return jar;
@@ -50,9 +52,9 @@ export module Services {
 
     getCookieValue(cookieJar, key) {
       const cookie = _.find(cookieJar, {key: key});
-      if(cookie) {
+      if (cookie) {
         return cookie['value'];
-      }else return '';
+      } else return '';
     }
 
 
@@ -126,7 +128,7 @@ export module Services {
       return Observable.fromPromise(post);
     }
 
-    annotateMap({config, app, id, annId, mapAnnotation}){
+    annotateMap({config, app, id, annId, mapAnnotation}) {
       let jar = requestPromise.jar();
       jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
       jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
@@ -134,7 +136,7 @@ export module Services {
         project: id,
         mapAnnotation: JSON.stringify(mapAnnotation)
       }
-      if(annId) {
+      if (annId) {
         formData['annId'] = annId
       }
       const post = requestPromise({
@@ -168,6 +170,39 @@ export module Services {
         }
       });
       return Observable.fromPromise(get);
+    }
+
+
+    images({config, app, offset, limit, owner, group, normalize}){
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+      const post = requestPromise({
+        uri: `${config.host}/api/v0/m/images/?offset=${offset}&limit=${limit}&owner=${owner}&group=${group}&normalize=${normalize}`,
+        method: 'GET',
+        jar: jar,
+        headers: {
+          'X-CSRFToken': app.csrf,
+          'sessionUuid': app.sessionUuid
+        }
+      });
+      return Observable.fromPromise(post);
+    }
+
+    image({config, app, imageId}) {
+      let jar = requestPromise.jar();
+      jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
+      jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);
+      const post = requestPromise({
+        uri: `${config.host}/api/v0/m/images/${imageId}/`,
+        method: 'GET',
+        jar: jar,
+        headers: {
+          'X-CSRFToken': app.csrf,
+          'sessionUuid': app.sessionUuid
+        }
+      });
+      return Observable.fromPromise(post);
     }
 
 

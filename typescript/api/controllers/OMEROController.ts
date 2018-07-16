@@ -24,7 +24,8 @@ export module Controllers {
       'projects',
       'create',
       'link',
-      'checkLink'
+      'checkLink',
+      'images'
     ];
     _config: any;
 
@@ -66,12 +67,11 @@ export module Controllers {
               groupId: login.groupId,
               userId: login.userId
             };
-            sails.log.debug(info);
-            return WorkspaceService.updateWorkspaceInfo(response.id, info);
+            return WorkspaceService.updateWorkspaceInfo(userId, info);
           })
           .flatMap(response => {
-            if (response.id && response.info !== info) {
-              return WorkspaceService.updateWorkspaceInfo(response.id, info);
+            if (_.isEqual(response.info, info)) {
+              return WorkspaceService.updateWorkspaceInfo(userId, info);
             } else {
               return WorkspaceService.createWorkspaceInfo(userId, this.config.appName, info);
             }
@@ -333,6 +333,40 @@ export module Controllers {
         return {rdmpId: _.first(workspaceInfo), workspaceId: _.last(workspaceInfo)};
       } else {
         return {rdmpId: null, workspaceId: null};
+      }
+    }
+
+    images(req, res) {
+      this.config.set();
+      if (!req.isAuthenticated()) {
+        this.ajaxFail(req, res, `User not authenticated`);
+      } else {
+        const userId = req.user.id;
+        const offset = 10;
+        const limit = 10;
+        const normalize = 'false';
+        let app = {};
+
+        return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
+          .flatMap(response => {
+            app = response.info;
+            if (response.info) {
+              const app = response.info;
+              return OMEROService.images({
+                config: this.config, app: app, offset: offset, limit: limit,
+                owner: app.userId, group: app.ownerId, normalize: normalize
+              });
+            } else {
+              throw new Error('Missing application credentials');
+            }
+          }).subscribe(response => {
+
+            this.ajaxOk(req, res, null, {status: true, response: response});
+          }, error => {
+            const errorMessage = `Failed to get images of user: ${userId}`;
+            sails.log.error(errorMessage);
+            this.ajaxFail(req, res, errorMessage, error);
+          });
       }
     }
 
