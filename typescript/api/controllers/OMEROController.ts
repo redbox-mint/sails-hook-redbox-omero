@@ -67,11 +67,11 @@ export module Controllers {
               groupId: login.groupId,
               userId: login.userId
             };
-            return WorkspaceService.updateWorkspaceInfo(userId, info);
+            return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName);
           })
           .flatMap(response => {
-            if (_.isEqual(response.info, info)) {
-              return WorkspaceService.updateWorkspaceInfo(userId, info);
+            if (response && response.id) {
+              return WorkspaceService.updateWorkspaceInfo(response.id, info);
             } else {
               return WorkspaceService.createWorkspaceInfo(userId, this.config.appName, info);
             }

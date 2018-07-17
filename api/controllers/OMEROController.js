@@ -63,11 +63,11 @@ var Controllers;
                         groupId: login.groupId,
                         userId: login.userId
                     };
-                    return WorkspaceService.updateWorkspaceInfo(userId_1, info_1);
+                    return WorkspaceService.workspaceAppFromUserId(userId_1, _this.config.appName);
                 })
                     .flatMap(function (response) {
-                    if (_.isEqual(response.info, info_1)) {
-                        return WorkspaceService.updateWorkspaceInfo(userId_1, info_1);
+                    if (response && response.id) {
+                        return WorkspaceService.updateWorkspaceInfo(response.id, info_1);
                     }
                     else {
                         return WorkspaceService.createWorkspaceInfo(userId_1, _this.config.appName, info_1);
