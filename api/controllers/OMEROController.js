@@ -168,6 +168,7 @@ var Controllers;
                 var mapAnnotation_1 = [];
                 var record_1 = WorkspaceService.mapToRecord(project, recordMap);
                 record_1 = _.merge(record_1, { type: this.config.recordType });
+                record_1.rdmpOid = rdmp_1;
                 var app_1 = {};
                 var annotations_1 = [];
                 var rowAnnotation_1;
@@ -263,10 +264,17 @@ var Controllers;
             var app = _a.app, record = _a.record, rowAnnotation = _a.rowAnnotation, idAnnotation = _a.idAnnotation, annotations = _a.annotations, username = _a.username, rdmp = _a.rdmp;
             sails.log.debug('createWorkspaceRecord');
             var workspaceId = '';
+            var recordMetadata = null;
             return WorkspaceService.provisionerUser(this.config.provisionerUser)
                 .flatMap(function (response) {
                 sails.log.debug('provisionerUser:createWorkspaceRecord');
                 _this.config.redboxHeaders['Authorization'] = 'Bearer ' + response.token;
+                return WorkspaceService.getRecordMeta(_this.config, rdmp);
+            }).flatMap(function (response) {
+                sails.log.debug('recordMetadata');
+                recordMetadata = response;
+                record.rdmpTitle = recordMetadata.title;
+                sails.log.debug(record);
                 return WorkspaceService.createWorkspaceRecord(_this.config, username, record, _this.config.recordType, _this.config.workflowStage);
             }).flatMap(function (response) {
                 workspaceId = response.oid;
@@ -277,12 +285,8 @@ var Controllers;
                     config: _this.config, app: app, id: record.omeroId,
                     annId: annId, mapAnnotation: mapAnnotation
                 });
-            }).flatMap(function (response) {
-                return WorkspaceService.getRecordMeta(_this.config, rdmp);
-            })
-                .flatMap(function (recordMetadata) {
-                sails.log.debug('recordMetadata');
-                if (recordMetadata && recordMetadata.workspaces) {
+            }).flatMap(function () {
+                if (recordMetadata.workspaces) {
                     var wss = recordMetadata.workspaces.find(function (id) { return workspaceId === id; });
                     if (!wss) {
                         recordMetadata.workspaces.push({ id: workspaceId });

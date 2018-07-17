@@ -169,6 +169,7 @@ export module Controllers {
         let mapAnnotation = [];
         let record = WorkspaceService.mapToRecord(project, recordMap);
         record = _.merge(record, {type: this.config.recordType});
+        record.rdmpOid = rdmp;
 
         let app = {};
         let annotations = [];
@@ -265,10 +266,17 @@ export module Controllers {
     createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp}) {
       sails.log.debug('createWorkspaceRecord');
       let workspaceId = '';
+      let recordMetadata = null;
       return WorkspaceService.provisionerUser(this.config.provisionerUser)
         .flatMap(response => {
           sails.log.debug('provisionerUser:createWorkspaceRecord');
           this.config.redboxHeaders['Authorization'] = 'Bearer ' + response.token;
+            return WorkspaceService.getRecordMeta(this.config, rdmp);
+          }).flatMap(response => {
+          sails.log.debug('recordMetadata');
+          recordMetadata = response;
+          record.rdmpTitle = recordMetadata.title;
+          sails.log.debug(record);
           return WorkspaceService.createWorkspaceRecord(this.config, username, record, this.config.recordType, this.config.workflowStage);
         }).flatMap(response => {
           workspaceId = response.oid;
@@ -284,13 +292,8 @@ export module Controllers {
             config: this.config, app: app, id: record.omeroId,
             annId: annId, mapAnnotation: mapAnnotation
           });
-
-        }).flatMap(response => {
-          return WorkspaceService.getRecordMeta(this.config, rdmp);
-        })
-        .flatMap(recordMetadata => {
-          sails.log.debug('recordMetadata');
-          if (recordMetadata && recordMetadata.workspaces) {
+        }).flatMap(() => {
+          if (recordMetadata.workspaces) {
             const wss = recordMetadata.workspaces.find(id => workspaceId === id);
             if (!wss) {
               recordMetadata.workspaces.push({id: workspaceId});
