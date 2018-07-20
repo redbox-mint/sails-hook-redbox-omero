@@ -156,7 +156,8 @@ export class OMEROFormComponent extends LoadableComponent {
           this.rebuildForm();
           this.watchForChanges();
           this.registerEvents();
-          this.fieldMap['BackToPlan'].field.value = this.fieldMap['BackToPlan'].field.value + this.rdmp;
+          const focusTab = '?focusTabId=workspaces';
+          this.fieldMap['BackToPlan'].field.value = this.fieldMap['BackToPlan'].field.value + this.rdmp + focusTab;
         }
       });
     }).catch((err:any) => {
