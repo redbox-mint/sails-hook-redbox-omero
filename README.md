@@ -76,12 +76,24 @@ For more information on testing your hook go to : https://sailsjs.com/documentat
 
 ## Development in redbox-portal
 
-There are several ways to code against it.
+There are several ways to code against the redbox-portal. One of it is to link the code via `npm link`
 
-If you are using vagrant, place the code inside of the same machine/docker and do 
+*npm link this hook*
 
 ```bash
+cd /into/where/hook/is/
 npm link
+```
+
+npm link into redbox-portal
+
+```bash
+cd /into/redbox-portal/
 npm link sails-hook-redbox-omero
 ```
 
+If you are using vagrant, place the code inside of the same machine/docker. You can share it via the VagrantFile using sync_folder
+
+```yml
+  config.vm.synced_folder "/Users/moises/source/qcif/sails-hook-redbox-omero", "/opt/hooks/sails-hook-redbox-omero", id: "omero"
+```
