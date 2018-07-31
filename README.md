@@ -74,7 +74,28 @@ $ npm test
 For more information on testing your hook go to : https://sailsjs.com/documentation/concepts/testing
 
 
-## Development in redbox-portal
+### Angular
+
+Install Angular 1.7.4
+
+```bash
+npm install -g "@angular/cli@1.7.4"
+```
+
+To build your angular app:
+
+In redbox-portal/angular
+
+- Go to app/gitlab
+
+Compile:
+- To compile `ng build --app=gitlab`
+
+Develop:
+- To develop `ng build --app=gitlab --watch` 
+
+
+#### Development in redbox-portal
 
 There are several ways to code against the redbox-portal. One of it is to link the code via `npm link`
 
@@ -96,4 +117,10 @@ If you are using vagrant, place the code inside of the same machine/docker. You 
 
 ```yml
   config.vm.synced_folder "/Users/moises/source/qcif/sails-hook-redbox-omero", "/opt/hooks/sails-hook-redbox-omero", id: "omero"
+```
+
+Copy changes from hook to portal
+
+```bash
+cp -r /opt/hooks/sails-hook-redbox-gitlab/app/omero/dist/* ./.tmp/public/angular/omero
 ```
