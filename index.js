@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const ncp = require('ncp');
+const fs = require('fs-extra');
 
 const OMEROService = require('./api/services/OMEROService');
 const OMEROController = require('./api/controllers/OMEROController');
@@ -28,7 +29,13 @@ module.exports = function (sails) {
         angularOrigin = './node_modules/sails-hook-redbox-omero/app/omero/dist';
         angularDest = './assets/angular/omero';
       }
-
+      if (fs.existsSync(angularDest)) {
+        fs.removeSync(angularDest)
+      }
+      if (fs.existsSync(angularTmpDest)) {
+        fs.removeSync(angularTmpDest)
+      }
+      console.log('OMERO: Copying angular files');
       ncp(angularOrigin, angularDest, function (err) {
         if (err) {
           return console.error(err);
@@ -40,7 +47,6 @@ module.exports = function (sails) {
           return cb();
         });
       });
-      // }
     },
     //If each route middleware do not exist sails.lift will fail during hook.load()
     routes: {
