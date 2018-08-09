@@ -7,6 +7,7 @@ const OMEROController = require('./api/controllers/OMEROController');
 
 const recordTypeConfig = require('./config/recordtype');
 const workflowConfig = require('./config/workflow');
+const workspaceTypeConfig = require('./config/workspacetype.js');
 const recordFormConfig = require('./form-config/omero-1.0-draft');
 
 module.exports = function (sails) {
@@ -63,6 +64,7 @@ module.exports = function (sails) {
       sails.services['OMEROService'] = OMEROService;
       sails.config = _.merge(sails.config, recordTypeConfig);
       sails.config = _.merge(sails.config, workflowConfig);
+      sails.config = _.merge(sails.config, workspaceTypeConfig);
       sails.config['form']['forms'] = _.merge(sails.config['form']['forms'], {'omero-1.0-draft': recordFormConfig});
     }
   }

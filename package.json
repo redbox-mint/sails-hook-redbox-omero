@@ -9,7 +9,8 @@
   },
   "scripts": {
     "test": "NODE_ENV=test node_modules/.bin/mocha",
-    "type": "node_modules/.bin/tsc --project tsconfig.json"
+    "type": "node_modules/.bin/tsc --project tsconfig.json",
+    "copyng": "cp -rf ./app/omero/dist /opt/redbox-portal/.tmp/public/angular/omero"
   },
   "repository": {
     "type": "git",
