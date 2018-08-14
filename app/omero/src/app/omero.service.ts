@@ -51,7 +51,7 @@ export class OMEROService extends BaseService {
   }
 
   projects(limit: number, offset: number) {
-    const wsUrl = `${this.brandingAndPortalUrl}/ws/omero/projects/${limit}/${offset}`;
+    const wsUrl = `${this.brandingAndPortalUrl}/ws/omero/projects/${limit}/${offset}?ts=${new Date().getTime()}`;
     return this.http.get(
       wsUrl,
       this.options
