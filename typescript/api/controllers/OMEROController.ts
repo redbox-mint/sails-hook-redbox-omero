@@ -132,7 +132,7 @@ export module Controllers {
             const project = req.param('creation');
             //TODO: add type checking object map here
             project.type = 'project';
-            return OMEROService.createContainer(this.config, app, project, 'Project', this.config.defaultGroupId);
+            return OMEROService.createContainer(this.config, app, project, 'Project', app.groupId || this.config.defaultGroupId);
           })
           .subscribe(response => {
             sails.log.debug('createProject');

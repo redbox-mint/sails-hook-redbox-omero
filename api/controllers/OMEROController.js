@@ -131,7 +131,7 @@ var Controllers;
                     var app = response.info;
                     var project = req.param('creation');
                     project.type = 'project';
-                    return OMEROService.createContainer(_this.config, app, project, 'Project', _this.config.defaultGroupId);
+                    return OMEROService.createContainer(_this.config, app, project, 'Project', app.groupId || _this.config.defaultGroupId);
                 })
                     .subscribe(function (response) {
                     sails.log.debug('createProject');
