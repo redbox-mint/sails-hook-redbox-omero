@@ -90,7 +90,7 @@ module.exports = {
         statusLabel: 'No links, Linking to workspace ...',
         processingSuccess: 'Your workspace was linked succesfully',
         processingFail: 'Your workspace is linked with another RDMP',
-        closeLabel: 'Ok'
+        closeLabel: 'Close'
       }
     },
     {
@@ -108,8 +108,8 @@ module.exports = {
         workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-',
         branch: 'master',
         createLabel: 'Create',
-        dismissLabel: 'Ok',
-        createWorkspaceLabel: 'Create Workspace',
+        dismissLabel: 'Close',
+        createWorkspaceLabel: 'Create Workspace (no spaces allowed*)',
         workspaceDetailsLabel: 'Workspace Details',
         selectSpace: 'Select Space',
         nameWorkspace: 'Name your workspace (no spaces allowed*)',

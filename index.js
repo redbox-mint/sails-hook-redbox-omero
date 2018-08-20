@@ -28,7 +28,7 @@ module.exports = function (sails) {
       }
       else {
         angularOrigin = './node_modules/sails-hook-redbox-omero/app/omero/dist';
-        angularDest = './assets/angular/omero';
+        angularDest = './angular/omero';
       }
       if (fs.existsSync(angularDest)) {
         fs.removeSync(angularDest)
