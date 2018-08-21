@@ -50,7 +50,7 @@ module.exports = {
         rdmpLinkLabel: 'Plan',
         syncLabel: 'Sync',
         linkedLabel: 'Linked',
-        linkedAnotherLabel: 'Linked to another workspace',
+        linkedAnotherLabel: 'Linked to another RDMP',
         linkLabel: 'Link Workspace',
         linkProblem: 'There was a problem checking the link',
         workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-'
