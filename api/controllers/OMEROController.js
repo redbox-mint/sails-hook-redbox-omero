@@ -188,7 +188,9 @@ var Controllers;
                         rowAnnotation_1 = undefined;
                         idAnnotation_1 = undefined;
                         return _this.createAnnotation({
-                            app: app_1, record: record_1, rowAnnotation: rowAnnotation_1, idAnnotation: idAnnotation_1, annotations: annotations_1, username: username_1, rdmp: rdmp_1
+                            app: app_1, record: record_1, rowAnnotation: rowAnnotation_1,
+                            idAnnotation: idAnnotation_1, annotations: annotations_1, username: username_1,
+                            rdmp: rdmp_1, brandingAndPortalUrl: _this.config.brandingAndPortalUrl
                         });
                     }
                     else
@@ -261,7 +263,7 @@ var Controllers;
         };
         OMEROController.prototype.createAnnotation = function (_a) {
             var _this = this;
-            var app = _a.app, record = _a.record, rowAnnotation = _a.rowAnnotation, idAnnotation = _a.idAnnotation, annotations = _a.annotations, username = _a.username, rdmp = _a.rdmp;
+            var app = _a.app, record = _a.record, rowAnnotation = _a.rowAnnotation, idAnnotation = _a.idAnnotation, annotations = _a.annotations, username = _a.username, rdmp = _a.rdmp, brandingAndPortalUrl = _a.brandingAndPortalUrl;
             sails.log.debug('createWorkspaceRecord');
             var workspaceId = '';
             var recordMetadata = null;
@@ -278,7 +280,7 @@ var Controllers;
                 return WorkspaceService.createWorkspaceRecord(_this.config, username, record, _this.config.recordType, _this.config.workflowStage);
             }).flatMap(function (response) {
                 workspaceId = response.oid;
-                var create = _this.mapAnnotation(rowAnnotation, _this.getAnnotation(idAnnotation, annotations), 'stash', rdmp + "." + workspaceId);
+                var create = _this.mapAnnotation(rowAnnotation, _this.getAnnotation(idAnnotation, annotations), 'stash', rdmp + "." + workspaceId, 'stash RDMP', brandingAndPortalUrl + "/record/view/" + rdmp);
                 var annId = idAnnotation || null;
                 var mapAnnotation = create.values;
                 return OMEROService.annotateMap({
@@ -298,14 +300,14 @@ var Controllers;
         OMEROController.prototype.getAnnotation = function (id, annotations) {
             return annotations.find(function (an) { return an.id === id; });
         };
-        OMEROController.prototype.mapAnnotation = function (row, annotation, key, newValue) {
+        OMEROController.prototype.mapAnnotation = function (row, annotation, key, newValue, humanKey, humanAnnotation) {
             if (annotation) {
                 annotation.values[row.toString()][1] = newValue;
                 return annotation;
             }
             else {
                 var annotation_1 = {
-                    values: [[key, newValue.toString()]]
+                    values: [[key, newValue.toString()], [humanKey, humanAnnotation]]
                 };
                 return annotation_1;
             }

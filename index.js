@@ -28,7 +28,7 @@ module.exports = function (sails) {
       }
       else {
         angularOrigin = './node_modules/sails-hook-redbox-omero/app/omero/dist';
-        angularDest = './angular/omero';
+        angularDest = './assets/angular/omero';
       }
       if (fs.existsSync(angularDest)) {
         fs.removeSync(angularDest)
@@ -36,14 +36,17 @@ module.exports = function (sails) {
       if (fs.existsSync(angularTmpDest)) {
         fs.removeSync(angularTmpDest)
       }
-      console.log('OMERO: Copying angular files');
-      ncp(angularOrigin, angularDest, function (err) {
+      ncp(angularOrigin, angularTmpDest, function (err) {
         if (err) {
           return console.error(err);
+        } else {
+          console.log('OMERO: Copied angular app to ' + angularTmpDest);
         }
-        ncp(angularOrigin, angularTmpDest, function (err) {
+        ncp(angularOrigin, angularDest, function (err) {
           if (err) {
             return console.error(err);
+          } else {
+            console.log('OMERO: Copied angular app to ' + angularDest);
           }
           return cb();
         });

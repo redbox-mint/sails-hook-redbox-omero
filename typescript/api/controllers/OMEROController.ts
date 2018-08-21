@@ -192,8 +192,10 @@ export module Controllers {
               rowAnnotation = undefined;
               idAnnotation = undefined;
               return this.createAnnotation({
-                app, record, rowAnnotation, idAnnotation, annotations, username, rdmp
-              });
+                app: app, record: record, rowAnnotation: rowAnnotation,
+                idAnnotation: idAnnotation, annotations: annotations, username: username,
+                rdmp: rdmp, brandingAndPortalUrl: this.config.brandingAndPortalUrl
+            });
             } else return Observable.of({body: ann});
           }).subscribe(response => {
             sails.log.debug('linkWorkspace');
@@ -263,7 +265,7 @@ export module Controllers {
       }
     }
 
-    createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp}) {
+    createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp, brandingAndPortalUrl}) {
       sails.log.debug('createWorkspaceRecord');
       let workspaceId = '';
       let recordMetadata = null;
@@ -284,7 +286,9 @@ export module Controllers {
             rowAnnotation,
             this.getAnnotation(idAnnotation, annotations),
             'stash',
-            `${rdmp}.${workspaceId}`
+            `${rdmp}.${workspaceId}`,
+            'stash RDMP',
+            `${brandingAndPortalUrl}/record/view/${rdmp}`
           );
           const annId = idAnnotation || null;
           const mapAnnotation = create.values;
@@ -307,14 +311,14 @@ export module Controllers {
       return annotations.find(an => an.id === id);
     }
 
-    mapAnnotation(row: number, annotation: any, key, newValue: string) {
+    mapAnnotation(row: number, annotation: any, key, newValue: string, humanKey: string, humanAnnotation: string) {
       //OMERO stores annotations as array of arrays. Each element being array[0] property and array[1] value
       if (annotation) {
         annotation.values[row.toString()][1] = newValue;
         return annotation;
       } else {
         const annotation = {
-          values: [[key, newValue.toString()]]
+          values: [[key, newValue.toString()], [humanKey, humanAnnotation]]
         };
         return annotation;
       }
