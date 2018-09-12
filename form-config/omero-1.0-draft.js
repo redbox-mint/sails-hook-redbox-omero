@@ -53,7 +53,7 @@ module.exports = {
         linkedAnotherLabel: 'Linked to another RDMP',
         linkLabel: 'Link Workspace',
         linkProblem: 'There was a problem checking the link',
-        workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-'
+        workspaceLink: 'https://omero.research.uts.edu.au/webclient/?show=project-'
         // subscribe: {
         //   'LoginWorkspaceApp': {
         //     listWorkspaces: [{
@@ -79,7 +79,7 @@ module.exports = {
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
-        workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-',
+        workspaceLink: 'https://omero.research.uts.edu.au/webclient/?show=project-',
         checkField: 'name_with_namespace',
         checkBranch: 'master',
         linkModalTitle: 'Workspace Linking',
@@ -105,7 +105,7 @@ module.exports = {
           {record: 'location', ele: 'location'},
           {record: 'dataset', ele: 'url:dataset'}
         ],
-        workspaceLink: 'https://omero-dev.research.uts.edu.au/webclient/?show=project-',
+        workspaceLink: 'https://omero.research.uts.edu.au/webclient/?show=project-',
         branch: 'master',
         createLabel: 'Create',
         dismissLabel: 'Close',
