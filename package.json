@@ -43,7 +43,7 @@
     "path-exists": "^3.0.0",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
-    "rxjs": "6.2.0",
+    "rxjs": "5.5.10",
     "rxjs-compat": "^6.2.0",
     "typescript": "^2.8.3"
   }
