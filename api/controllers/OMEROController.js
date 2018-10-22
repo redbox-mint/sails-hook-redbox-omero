@@ -268,6 +268,7 @@ var Controllers;
             this.config.set();
             var workspaceId = '';
             var recordMetadata = null;
+            this.config.brandingAndPortalUrl = brandingAndPortalUrl;
             return WorkspaceService.getRecordMeta(this.config, rdmp)
                 .flatMap(function (response) {
                 sails.log.debug('recordMetadata');
