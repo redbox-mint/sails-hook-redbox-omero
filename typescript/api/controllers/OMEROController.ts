@@ -267,14 +267,11 @@ export module Controllers {
 
     createAnnotation({app, record, rowAnnotation, idAnnotation, annotations, username, rdmp, brandingAndPortalUrl}) {
       sails.log.debug('createWorkspaceRecord');
+      this.config.set();
       let workspaceId = '';
       let recordMetadata = null;
-      return WorkspaceService.provisionerUser(this.config.provisionerUser)
-        .flatMap(response => {
-          sails.log.debug('provisionerUser:createWorkspaceRecord');
-          this.config.redboxHeaders['Authorization'] = 'Bearer ' + response.token;
-            return WorkspaceService.getRecordMeta(this.config, rdmp);
-          }).flatMap(response => {
+       return WorkspaceService.getRecordMeta(this.config, rdmp)
+          .flatMap(response => {
           sails.log.debug('recordMetadata');
           recordMetadata = response;
           record.rdmpTitle = recordMetadata.title;

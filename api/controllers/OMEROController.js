@@ -265,14 +265,11 @@ var Controllers;
             var _this = this;
             var app = _a.app, record = _a.record, rowAnnotation = _a.rowAnnotation, idAnnotation = _a.idAnnotation, annotations = _a.annotations, username = _a.username, rdmp = _a.rdmp, brandingAndPortalUrl = _a.brandingAndPortalUrl;
             sails.log.debug('createWorkspaceRecord');
+            this.config.set();
             var workspaceId = '';
             var recordMetadata = null;
-            return WorkspaceService.provisionerUser(this.config.provisionerUser)
+            return WorkspaceService.getRecordMeta(this.config, rdmp)
                 .flatMap(function (response) {
-                sails.log.debug('provisionerUser:createWorkspaceRecord');
-                _this.config.redboxHeaders['Authorization'] = 'Bearer ' + response.token;
-                return WorkspaceService.getRecordMeta(_this.config, rdmp);
-            }).flatMap(function (response) {
                 sails.log.debug('recordMetadata');
                 recordMetadata = response;
                 record.rdmpTitle = recordMetadata.title;
