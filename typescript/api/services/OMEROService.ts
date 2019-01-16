@@ -1,4 +1,4 @@
-import {Observable, Scheduler} from 'rxjs/Rx';
+import {Observable, Scheduler} from 'rxjs';
 import {Sails, Model} from 'sails';
 import * as requestPromise from 'request-promise';
 import * as tough from "tough-cookie";
@@ -173,7 +173,7 @@ export module Services {
     }
 
 
-    images({config, app, offset, limit, owner, group, normalize}){
+    images({config, app, offset, limit, owner, group, normalize}) {
       let jar = requestPromise.jar();
       jar = this.cookieJar(jar, config, 'csrftoken', app.csrf);
       jar = this.cookieJar(jar, config, 'sessionid', app.sessionid);

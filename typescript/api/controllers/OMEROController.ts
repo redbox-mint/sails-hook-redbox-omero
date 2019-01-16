@@ -2,8 +2,8 @@ declare var module;
 declare var sails, Model;
 declare var _;
 
-import {Observable} from 'rxjs/Rx';
-import 'rxjs/add/operator/map';
+import {Observable, of} from 'rxjs';
+import { map } from 'rxjs/operators';
 
 declare var BrandingService, WorkspaceService, OMEROService;
 /**
@@ -259,6 +259,7 @@ export module Controllers {
             this.ajaxOk(req, res, null, {status: true, check: check});
           }, error => {
             const errorMessage = `Failed compare link workspace project: ${omeroId}`;
+            sails.log.error(error);
             sails.log.error(errorMessage);
             this.ajaxFail(req, res, errorMessage, error);
           });
@@ -325,7 +326,7 @@ export module Controllers {
     findAnnotation(annotation: string, annotations: string[][]) {
       //Return annotation id where string == annotation[][]
       return annotations.map((anns, index) => {
-        const row = anns['values'].findIndex(an => an[0] === annotation);
+        const row = _.findIndex(anns['values'], an => an[0] === annotation);
         return {index: index, id: anns['id'], row: row != -1 ? row : null}
       }).filter((cur) => {
         return cur.row != null;
