@@ -32,6 +32,7 @@ export class ListWorkspaceDataField extends FieldBase<any> {
   user: any;
   omeroService: OMEROService;
   rdmp: string;
+  host: string;
   workspaceLink: string;
   linkedState: string;
   linkedLabel: string;
@@ -82,6 +83,9 @@ export class ListWorkspaceDataField extends FieldBase<any> {
 
   init() {
     this.rdmp = this.fieldMap._rootComp.rdmp;
+    this.omeroService.info().then(res=>{
+      this.host = res.host
+    })
   }
 
   revoke() {

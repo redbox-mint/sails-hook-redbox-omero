@@ -34,6 +34,7 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
   closeLabel: string;
   processing: boolean;
   processingStatus: string; //Control status code {'done','async','start'}
+  host: string;
   workspaceLink: string;
 
   omeroService: OMEROService;
@@ -97,25 +98,29 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
 
   linkModal({rdmp, workspace}) {
     this.currentWorkspace = workspace;
-    this.currentWorkspace.location = this.workspaceLink + workspace['@id'];
     this.checks.clear();
     jQuery('#linkModal').modal({show: true, keyboard: false, backdrop: 'static'});
     this.processing = true;
     this.checks.master = true;
-    return this.omeroService.link({
-      rdmp: rdmp,
-      project: this.currentWorkspace,
-      recordMap: this.recordMap
-    }).then(response => {
-      if (!response.status) {
-        this.processingStatus = 'done';
-        this.processingFail = response.error.message;
-      } else {
-        this.checks.linkCreated = true;
-      }
-      this.processing = false;
-      this.listWorkspaces.emit();
-    })
+    return this.omeroService.info()
+      .then(res => {
+        this.host = res.host;
+        this.currentWorkspace.location = this.host + this.workspaceLink + workspace['@id'];
+        return this.omeroService.link({
+          rdmp: rdmp,
+          project: this.currentWorkspace,
+          recordMap: this.recordMap
+        });
+      }).then(response => {
+        if (!response.status) {
+          this.processingStatus = 'done';
+          this.processingFail = response.error.message;
+        } else {
+          this.checks.linkCreated = true;
+        }
+        this.processing = false;
+        this.listWorkspaces.emit();
+      })
       .catch(error => {
         this.processingStatus = 'done';
         this.processingFail = error.error.message;
@@ -138,7 +143,8 @@ export class LinkModalWorkspaceField extends FieldBase<any> {
           </div>
           <div class="modal-body">
             <h5>{{ field.workspaceDetailsTitle }}</h5>
-            <p *ngFor="let item of field.workspaceDefinition">{{ item.label }} : {{ field.currentWorkspace[item.name]}}</p>
+            <p *ngFor="let item of field.workspaceDefinition">{{ item.label }} :
+              {{ field.currentWorkspace[item.name]}}</p>
             <h5>{{ field.processingLabel }}</h5>
             <p>{{ field.processingMessage }}&nbsp;<span
               *ngIf="field.checks.master; then isDone; else isSpinning"></span></p>

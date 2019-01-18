@@ -53,6 +53,7 @@ export class CreateWorkspaceField extends FieldBase<any> {
   rdmp: string;
   recordMap: any[];
   branch: string;
+  host: string;
 
   @Output() listWorkspaces: EventEmitter<any> = new EventEmitter<any>();
 
@@ -151,21 +152,23 @@ export class CreateWorkspaceField extends FieldBase<any> {
 
   createWorkspace() {
     this.creationAlert.set({message: this.creatingWorkspace, status: 'working', className: 'warning'});
-    this.omeroService.createWorkspace(this.creation)
-      .then(response => {
-        if (!response.status) {
-          //TODO: improve this assignment in case of error.
-          throw new Error('Error creating workspace');
-        } else {
-          this.creationAlert.set({message: this.linkingWorkspace, status: 'working', className: 'warning'});
-          this.creation.id = response.create['@id'];
-          this.creation.description = response.create['Description'];
-          this.creation.location = this.workspaceLink + this.creation.id;
-          return this.omeroService.link({
-            rdmp: this.rdmp, project: this.creation, recordMap: this.recordMap
-          })
-        }
-      }).then(response => {
+    this.omeroService.info().then(res => {
+      this.host = res.host;
+      return this.omeroService.createWorkspace(this.creation);
+    }).then(response => {
+      if (!response.status) {
+        //TODO: improve this assignment in case of error.
+        throw new Error('Error creating workspace');
+      } else {
+        this.creationAlert.set({message: this.linkingWorkspace, status: 'working', className: 'warning'});
+        this.creation.id = response.create['@id'];
+        this.creation.description = response.create['Description'];
+        this.creation.location = this.host + this.workspaceLink + this.creation.id;
+        return this.omeroService.link({
+          rdmp: this.rdmp, project: this.creation, recordMap: this.recordMap
+        })
+      }
+    }).then(response => {
       if (!response.status) {
         throw new Error(response.message.description);
       }

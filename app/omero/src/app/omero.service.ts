@@ -34,6 +34,22 @@ export class OMEROService extends BaseService {
     }
   }
 
+  info() {
+    const wsUrl = this.brandingAndPortalUrl + `/ws/omero/info`;
+    return this.http.get(
+      wsUrl,
+      this.options
+    )
+      .toPromise()
+      .then((res: any) => {
+        return this.extractData(res);
+      })
+      .catch((res: any) => {
+        console.log(res);
+        return this.extractData(res);
+      });
+  }
+
   session(login) {
     const wsUrl = this.brandingAndPortalUrl + '/ws/omero/login';
     return this.http.post(
