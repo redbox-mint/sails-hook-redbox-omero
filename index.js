@@ -56,6 +56,7 @@ module.exports = function (sails) {
     routes: {
       before: {},
       after: {
+        'get /:branding/:portal/ws/omero/info': OMEROController.info,
         'get /:branding/:portal/ws/omero/projects/:limit?/:offset?': OMEROController.projects,
         'post /:branding/:portal/ws/omero/login': OMEROController.login,
         'post /:branding/:portal/ws/omero/create': OMEROController.create,

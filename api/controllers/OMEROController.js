@@ -8,6 +8,7 @@ var Controllers;
         constructor() {
             super();
             this._exportedMethods = [
+                'info',
                 'login',
                 'projects',
                 'create',
@@ -16,6 +17,10 @@ var Controllers;
                 'images'
             ];
             this.config = new Config();
+        }
+        info(req, res) {
+            this.config.set();
+            this.ajaxOk(req, res, null, { host: this.config.host, status: true });
         }
         login(req, res) {
             this.config.set();

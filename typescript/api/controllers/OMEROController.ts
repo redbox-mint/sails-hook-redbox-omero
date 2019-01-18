@@ -20,6 +20,7 @@ export module Controllers {
   export class OMEROController extends controller.Controllers.Core.Controller {
 
     protected _exportedMethods: any = [
+      'info',
       'login',
       'projects',
       'create',
@@ -34,6 +35,11 @@ export module Controllers {
     constructor() {
       super();
       this.config = new Config();
+    }
+
+    public info(req, res) {
+      this.config.set();
+      this.ajaxOk(req, res, null, {host: this.config.host, status: true});
     }
 
     login(req, res) {
