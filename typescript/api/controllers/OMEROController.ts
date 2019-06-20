@@ -104,7 +104,7 @@ export module Controllers {
         const offset = req.param('offset') || 0;
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
-            sails.log.debug('userInfo');
+            sails.log.debug('projects:workspaceAppFromUserId');
             if (response.info) {
               const app = response.info;
               return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid, limit, offset, app.userId);
@@ -252,7 +252,6 @@ export module Controllers {
             }
             return WorkspaceService.getRecordMeta(this.config, rdmpId);
           }).subscribe(recordMetadata => {
-
             if (recordMetadata && recordMetadata['workspaces']) {
               //const wss = recordMetadata.workspaces.find(id => info['workspaceId'] === id);
               if (info['rdmpId']) {
@@ -265,7 +264,7 @@ export module Controllers {
             this.ajaxOk(req, res, null, {status: true, check: check});
           }, error => {
             const errorMessage = `Failed compare link workspace project: ${omeroId}`;
-            sails.log.error(error);
+            //sails.log.error(error);
             sails.log.error(errorMessage);
             this.ajaxFail(req, res, errorMessage, error);
           });
