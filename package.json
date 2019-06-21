@@ -1,7 +1,7 @@
 {
   "name": "sails-hook-redbox-omero",
   "version": "1.0.0",
-  "description": "A Sails OMERO Hook for Redbox-Portal",
+  "description": "A Sails hook to add functionality to redbox that provisions OMERO",
   "main": "index.js",
   "sails": {
     "isHook": true,
