@@ -43,7 +43,7 @@ jobs:
                     export NVM_DIR="$HOME/.nvm"
                     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" 
       - run: export NVM_DIR="$HOME/.nvm" && [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && nvm install && npm install && node_modules/.bin/tsc
-      - run: chmod +x support/build/compileAngularLegacy.sh && support/build/compileAngularLegacy.sh gitlab
+      - run: chmod +x support/build/compileAngularLegacy.sh && support/build/compileAngularLegacy.sh omero
       # run tests!
       # - run: npm test
       # # store test results
