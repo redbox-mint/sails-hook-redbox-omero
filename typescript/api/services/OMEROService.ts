@@ -1,4 +1,4 @@
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs/Rx';
 import {Sails, Model} from 'sails';
 import * as requestPromise from "request-promise";
 import * as _ from 'lodash';
