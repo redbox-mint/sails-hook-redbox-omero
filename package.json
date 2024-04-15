@@ -1,6 +1,6 @@
 {
   "name": "@researchdatabox/sails-hook-redbox-omero",
-  "version": "0.0.1-prerelease",
+  "version": "0.0.2-prerelease",
   "description": "A Sails hook to add functionality to redbox that provisions OMERO",
   "main": "index.js",
   "sails": {
