@@ -1,5 +1,5 @@
 {
-  "name": "sails-hook-redbox-omero",
+  "name": "@researchdatabox/sails-hook-redbox-omero",
   "version": "1.0.0",
   "description": "A Sails hook to add functionality to redbox that provisions OMERO",
   "main": "index.js",
@@ -8,13 +8,11 @@
     "hookName": "omero"
   },
   "scripts": {
-    "test": "NODE_ENV=test node_modules/.bin/mocha",
-    "compile": "node_modules/.bin/tsc --project tsconfig.json",
-    "copyng": "cp -rf ./app/omero/dist /opt/redbox-portal/.tmp/public/angular/omero"
+    "test": "NODE_ENV=test node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "git@code.research.uts.edu.au:135553/sails-hook-redbox-omero.git"
+    "url": "https://github.com/redbox-mint/sails-hook-redbox-omero"
   },
   "keywords": [
     "sails",
@@ -22,10 +20,11 @@
     "redbox",
     "provisioner"
   ],
-  "author": "Moises Sacal",
+  "author": "QCIF Engineering",
   "license": "GPL-3.0",
   "devDependencies": {
     "@angular/cli": "^6.0.7",
+    "@tsconfig/node20": "^20.1.2",
     "@types/express": "^4.16.0",
     "@types/lodash": "^4.14.134",
     "@types/mocha": "^5.2.1",
@@ -33,9 +32,11 @@
     "mocha": "^6.1.4",
     "sails": "1.0.0",
     "supertest": "^4.0.2",
-    "ts-node": "^8.3.0"
+    "ts-node": "^8.3.0",
+    "typescript": "^5.2.2"
   },
   "dependencies": {
+    "@researchdatabox/redbox-core-types": "^1.4.3",
     "fs-extra": "^8.0.1",
     "lodash": "^4.17.11",
     "ncp": "^2.0.0",
@@ -43,7 +44,6 @@
     "request": "^2.88.0",
     "request-promise": "^4.2.4",
     "rxjs": "6.5.2",
-    "rxjs-compat": "6.5.2",
-    "typescript": "^2.8.3"
+    "rxjs-compat": "6.5.2"
   }
 }

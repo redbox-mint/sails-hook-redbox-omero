@@ -3,7 +3,10 @@ module.exports.workspacetype = {
     name: 'omero',
     label: 'OMERO',
     subtitle: 'OMERO',
-    description: 'Create or link OMERO workspace:',
-    logo: '/angular/omero/assets/images/omero.png'
+    description: 'Microscopy images stored in a secure central repository, from the microscope to publication.',
+    logo: '/images/omero.png',
+    app: {
+      id: 'omero'
+    }
   }
 };

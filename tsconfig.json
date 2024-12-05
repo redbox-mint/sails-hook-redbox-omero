@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    "outDir": "./",
+    "rootDir": "./typescript",
+    "strict": false,
     "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
@@ -13,10 +16,7 @@
     "removeComments": true,
     "noLib": false,
     "preserveConstEnums": true,
-    "suppressImplicitAnyIndexErrors": true,
     "sourceMap": false,
-    "outDir": "./",
-    "rootDir": "./typescript"
   },
   "exclude": [
     "node_modules/**",
@@ -26,16 +26,16 @@
     "angular/**"
   ],
   "include": [
-    "typescript/**/*.ts"
+    "typescript/**/*.ts", 
   ],
   "compileOnSave": true,
   "buildOnSave": false,
   "atom": {
-    "rewriteTsconfig": false
+      "rewriteTsconfig": false
   },
-  "paths": {
-    "lodash/*": [
-      "node_modules/@types/lodash-es/*"
+  "typeAcquisition": {
+    "include": [
+      "lodash"
     ]
   }
 }

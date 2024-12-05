@@ -3,13 +3,12 @@ declare var sails, Model;
 declare var _;
 
 import {Observable, of} from 'rxjs';
-import { map } from 'rxjs/operators';
 
-declare var BrandingService, WorkspaceService, OMEROService;
+declare var BrandingService, WorkspaceService, RecordsService, OMEROService;
 /**
  * Package that contains all Controllers.
  */
-import controller = require('../core/CoreController.js');
+import { Controllers as controller} from '@researchdatabox/redbox-core-types';
 
 export module Controllers {
 
@@ -17,7 +16,7 @@ export module Controllers {
    * Omero related features....
    *
    */
-  export class OMEROController extends controller.Controllers.Core.Controller {
+  export class OMEROController extends controller.Core.Controller {
 
     protected _exportedMethods: any = [
       'info',
@@ -28,7 +27,6 @@ export module Controllers {
       'checkLink',
       'images'
     ];
-    _config: any;
 
     protected config: any;
 
@@ -54,20 +52,20 @@ export module Controllers {
         let csrf: any = {};
         let info = {};
         const userId = req.user.id;
-        OMEROService.csrf(this.config)
+        sails.services.omeroservice.csrf(this.config)
           .flatMap(response => {
             csrf = JSON.parse(response);
-            return OMEROService.login(this.config, csrf.data, user);
+            return sails.services.omeroservice.login(this.config, csrf.data, user);
           })
           .flatMap(response => {
             const cookies = response.headers['set-cookie'];
             const body = JSON.parse(response.body);
             const login = body.eventContext;
             const sessionUuid = login.sessionUuid;
-            const cookieJar = OMEROService.getCookies(cookies);
+            const cookieJar = sails.services.omeroservice.getCookies(cookies);
             info = {
               csrf: csrf.data,
-              sessionid: OMEROService.getCookieValue(cookieJar, 'sessionid'),
+              sessionid: sails.services.omeroservice.getCookieValue(cookieJar, 'sessionid'),
               sessionUuid: sessionUuid,
               memberOfGroups: login.memberOfGroups,
               groupId: login.groupId,
@@ -107,7 +105,7 @@ export module Controllers {
             sails.log.debug('projects:workspaceAppFromUserId');
             if (response.info) {
               const app = response.info;
-              return OMEROService.projects(this.config, app.csrf, app.sessionid, app.sessionUuid, limit, offset, app.userId);
+              return sails.services.omeroservice.projects(this.config, app.csrf, app.sessionid, app.sessionUuid, limit, offset, app.userId);
             } else {
               throw new Error('Missing application credentials');
             }
@@ -138,7 +136,7 @@ export module Controllers {
             const project = req.param('creation');
             //TODO: add type checking object map here
             project.type = 'project';
-            return OMEROService.createContainer(this.config, app, project, 'Project', app.groupId || this.config.defaultGroupId);
+            return sails.services.omeroservice.createContainer(this.config, app, project, 'Project', app.groupId || this.config.defaultGroupId);
           })
           .subscribe(response => {
             sails.log.debug('createProject');
@@ -187,13 +185,13 @@ export module Controllers {
           .flatMap(response => {
             sails.log.debug('userInfo');
             app = response.info;
-            return OMEROService.annotations({config: this.config, app: app, id: record.omeroId});
+            return sails.services.omeroservice.annotations({config: this.config, app: app, id: record.omeroId});
           }).flatMap(response => {
             sails.log.debug('annotations');
             response = (JSON.parse(response));
             mapAnnotation = response['annotations'];
             //Check whether there is a workspace created
-            const ann = _.first(this.findAnnotation('stash', mapAnnotation));
+            const ann = this.findAnnotation('stash', mapAnnotation);
             if (!ann) {
               rowAnnotation = undefined;
               idAnnotation = undefined;
@@ -235,29 +233,38 @@ export module Controllers {
         return WorkspaceService.workspaceAppFromUserId(userId, this.config.appName)
           .flatMap(response => {
             const app = response.info;
-            return OMEROService.annotations({
+            return sails.services.omeroservice.annotations({
               config: this.config, app: app, id: omeroId
             })
-          }).flatMap(response => {
+          }).subscribe(async (response) => {
             try {
               response = JSON.parse(response) || {};
               mapAnnotation = response.annotations || null;
             } catch (e) {
               mapAnnotation = [];
             }
+            sails.log.verbose(`OMEROController annotation info: ${JSON.stringify(mapAnnotation)}`)
             //Check whether there is a workspace created
-            const ann = _.first(this.findAnnotation('stash', mapAnnotation));// Trying to find an annotation like this: e0582136e22f13059f5d36769282403d.75a2c64ca8c7ad77e9a68adc11e2015b
-            if (ann) {
-              info = this.workspaceInfoFromRepo(mapAnnotation[ann.index]['values'][ann.row][1]);
+            // const ann = _.first(this.findAnnotation('stash', mapAnnotation));// Trying to find an annotation like this: e0582136e22f13059f5d36769282403d.75a2c64ca8c7ad77e9a68adc11e2015b
+            // if (ann) {
+            //   info = this.workspaceInfoFromRepo(mapAnnotation[ann.index]['values'][ann.row][1]);
+            // }
+            const annEntry = this.findAnnotation('stash', mapAnnotation);// Trying to find an annotation like this: e0582136e22f13059f5d36769282403d.75a2c64ca8c7ad77e9a68adc11e2015b
+            sails.log.verbose(`OMEROController annotation entry: ${JSON.stringify(annEntry)}`)
+            if (annEntry) {
+              info = this.workspaceInfoFromRepo(annEntry);
             }
-            return WorkspaceService.getRecordMeta(this.config, rdmpId);
-          }).subscribe(recordMetadata => {
+            const recordInfo = await RecordsService.getMeta(rdmpId);
+            const recordMetadata = recordInfo['metadata'];
             if (recordMetadata && recordMetadata['workspaces']) {
-              //const wss = recordMetadata.workspaces.find(id => info['workspaceId'] === id);
+              sails.log.verbose(`OMEROController recordMetadata workspaces: ${JSON.stringify(recordMetadata['workspaces'])}`)
+              const wss = recordMetadata.workspaces.find((wrk) => info['workspaceId'] == wrk.id);
               if (info['rdmpId']) {
+                // the workspace is linked to a record
                 check.ws = true;
               }
-              if (rdmpId === info['rdmpId']) {
+              if (wss && rdmpId == info['rdmpId']) {
+                // the workspace is linked to this record
                 check.omero = true;
               }
             }
@@ -285,7 +292,10 @@ export module Controllers {
           sails.log.debug(record);
           return WorkspaceService.createWorkspaceRecord(this.config, username, record, this.config.recordType, this.config.workflowStage);
         }).flatMap(response => {
-          workspaceId = response.oid;
+          sails.log.verbose(`createAnnotation -> createWorkspaceRecord:`);
+          sails.log.verbose(response);
+          // FIXED: response is now an Axios response, adding '.data' path
+          workspaceId = response.data.workspaceOid;
           const create = this.mapAnnotation(
             rowAnnotation,
             this.getAnnotation(idAnnotation, annotations),
@@ -296,19 +306,20 @@ export module Controllers {
           );
           const annId = idAnnotation || null;
           const mapAnnotation = create.values;
-          return OMEROService.annotateMap({
+          return sails.services.omeroservice.annotateMap({
             config: this.config, app: app, id: record.omeroId,
             annId: annId, mapAnnotation: mapAnnotation
           });
-        }).flatMap(() => {
-          if (recordMetadata.workspaces) {
-            const wss = recordMetadata.workspaces.find(id => workspaceId === id);
-            if (!wss) {
-              recordMetadata.workspaces.push({id: workspaceId});
-            }
-          }
-          return WorkspaceService.updateRecordMeta(this.config, recordMetadata, rdmp);
-        });
+        })
+        // .flatMap(() => {
+        //   if (recordMetadata.workspaces) {
+        //     const wss = recordMetadata.workspaces.find(id => workspaceId === id);
+        //     if (!wss) {
+        //       recordMetadata.workspaces.push({id: workspaceId});
+        //     }
+        //   }
+        //   return WorkspaceService.updateRecordMeta(this.config, recordMetadata, rdmp);
+        // });
     }
 
     getAnnotation(id: number, annotations: any) {
@@ -328,14 +339,67 @@ export module Controllers {
       }
     }
 
-    findAnnotation(annotation: string, annotations: string[][]) {
-      //Return annotation id where string == annotation[][]
-      return annotations.map((anns, index) => {
-        const row = _.findIndex(anns['values'], an => an[0] === annotation);
-        return {index: index, id: anns['id'], row: row != -1 ? row : null}
-      }).filter((cur) => {
-        return cur.row != null;
-      });
+    findAnnotation(annotation: string, annotations: any[]) {
+      // 2024-03-26 Refactor, current annotations data structure is array of objects, e.g. :
+      // [
+      //   {
+      //     "id": 2854,
+      //     "ns": "openmicroscopy.org/omero/client/mapAnnotation",
+      //     "description": null,
+      //     "owner": {
+      //       "id": 552
+      //     },
+      //     "date": "2024-03-26T05:38:49Z",
+      //     "permissions": {
+      //       "canDelete": true,
+      //       "canAnnotate": true,
+      //       "canLink": true,
+      //       "canEdit": true
+      //     },
+      //     "link": {
+      //       "id": 603,
+      //       "owner": {
+      //         "id": 552
+      //       },
+      //       "parent": {
+      //         "id": 3153,
+      //         "class": "ProjectI",
+      //         "name": "test-rb-ws-omero-3"
+      //       },
+      //       "date": "2024-03-26T05:38:49Z",
+      //       "permissions": {
+      //         "canDelete": true,
+      //         "canAnnotate": true,
+      //         "canLink": true,
+      //         "canEdit": true
+      //       }
+      //     },
+      //     "class": "MapAnnotationI",
+      //     "values": [
+      //       [
+      //         "stash",
+      //         "0c8c48e0e4c311ee917c75953819bfae.0c8c48e0e4c311ee917c75953819bfae"
+      //       ],
+      //       [
+      //         "stash RDMP",
+      //         "http://localhost:1500/default/rdmp/record/view/0c8c48e0e4c311ee917c75953819bfae"
+      //       ]
+      //     ]
+      //   }
+      // ]
+      // Instead of returning the whole annotation object, will now return the actual 'value' entry
+      let valEntry = undefined;
+      const annVal = _.find(annotations, an => an['values'].find((val) => { if (val[0] == annotation) {valEntry = val[1]} return valEntry != undefined; }));
+      sails.log.verbose(`Found stash annotation link: ${JSON.stringify(annVal)}`);
+      sails.log.verbose(`Found stash annotation link value: ${valEntry}`)
+      
+      return valEntry;
+      // return annotations.map((anns, index) => {
+      //   const row = _.findIndex(anns['values'], an => an[0] === annotation);
+      //   return {index: index, id: anns['id'], row: row != -1 ? row : null}
+      // }).filter((cur) => {
+      //   return cur.row != null;
+      // });
     }
 
     workspaceInfoFromRepo(workspaceLink) {
@@ -363,7 +427,7 @@ export module Controllers {
             app = response.info;
             if (response.info) {
               const app = response.info;
-              return OMEROService.images({
+              return sails.services.omeroservice.images({
                 config: this.config, app: app, offset: offset, limit: limit,
                 owner: app.userId, group: app.ownerId, normalize: normalize
               });

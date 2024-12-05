@@ -1,20 +1,19 @@
-import {Observable, Scheduler} from 'rxjs';
+import { Observable } from 'rxjs/Rx';
 import {Sails, Model} from 'sails';
-import * as requestPromise from 'request-promise';
-import * as tough from "tough-cookie";
-
+import * as requestPromise from "request-promise";
 import * as _ from 'lodash';
 
-import services = require('../core/CoreService.js');
+import { RecordsService, Services as services} from '@researchdatabox/redbox-core-types';
 
-declare var RecordsService, BrandingService;
+
+declare var RecordsService: RecordsService, BrandingService;
 declare var sails: Sails;
 declare var _this;
 declare var Institution, User: Model;
 
 export module Services {
 
-  export class OMEROService extends services.Services.Core.Service {
+  export class OMEROService extends services.Core.Service {
 
     protected _exportedMethods: any = [
       'csrf',
